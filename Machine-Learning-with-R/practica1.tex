@@ -1,0 +1,2431 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Legrand Orange Book
+% LaTeX Template
+% Version 2.1.1 (14/2/16)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Mathias Legrand (legrand.mathias@gmail.com) with modifications by:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+% Compiling this template:
+% This template uses biber for its bibliography and makeindex for its index.
+% When you first open the template, compile it from the command line with the 
+% commands below to make sure your LaTeX distribution is configured correctly:
+%
+% 1) pdflatex main
+% 2) makeindex main.idx -s StyleInd.ist
+% 3) biber main
+% 4) pdflatex main x 2
+%
+% After this, when you wish to update the bibliography/index use the appropriate
+% command above and make sure to compile with pdflatex several times 
+% afterwards to propagate your changes to the document.
+%
+% This template also uses a number of packages which may need to be
+% updated to the newest versions for the template to compile. It is strongly
+% recommended you update your LaTeX distribution if you have any
+% compilation errors.
+%
+% Important note:
+% Chapter heading images should have a 2:1 width:height ratio,
+% e.g. 920px width and 460px height.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[11pt,fleqn]{book} % Default font size and left-justified equations
+
+%----------------------------------------------------------------------------------------
+
+\input{structure} % Insert the commands.tex file which contains the majority of the structure behind the template
+
+%%% Códigos R ...
+% Paquete listings para visualización de código más elegante
+\usepackage{xcolor,listings}
+\usepackage{textcomp}
+\lstset{upquote=true}
+\lstloadlanguages{R}
+\usepackage{color}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=R	,	                   % the language of the code
+  otherkeywords={*,...},           % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+%Para los comentarios multilinea
+\usepackage{verbatim}
+% Para la multicolumna 
+\usepackage{multicol} 
+% Para la animación en .gif
+\usepackage{movie15}
+
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\begingroup
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+\coordinate [below=12cm] (midpoint) at (current page.north);
+\node at (current page.north west)
+{\begin{tikzpicture}[remember picture,overlay]
+\node[anchor=north west,inner sep=0pt] at (0,0) {\includegraphics[width=\paperwidth]{background}}; % Background image
+\draw[anchor=north] (midpoint) node [fill=ocre!30!white,fill opacity=0.6,text opacity=1,inner sep=1cm]{\Huge\centering
+
+\bfseries\sffamily\parbox[c][][t]{\paperwidth}{\centering Análisis y Visualización de Datos con R\\[15pt] % Book title
+{\Large Orientado al Aprendizaje Automático}\\[20pt] % Subtitle
+{\huge Rafael Nogales}}}; % Author name
+\end{tikzpicture}};
+\end{tikzpicture}
+\vfill
+\endgroup
+
+%----------------------------------------------------------------------------------------
+%	COPYRIGHT PAGE
+%----------------------------------------------------------------------------------------
+
+\newpage
+~\vfill
+\thispagestyle{empty}
+
+\noindent Copyright \copyright\ 2016 Rafael Nogales\\ % Copyright notice
+
+%\noindent \textsc{Published by Publisher}\\ % Publisher
+
+%\noindent \textsc{book-website.com}\\ % URL
+
+\noindent Licensed under the Creative Commons Attribution-NonCommercial 3.0 Unported License (the ``License''). You may not use this file except in compliance with the License. You may obtain a copy of the License at \url{http://creativecommons.org/licenses/by-nc/3.0}. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \textsc{``as is'' basis, without warranties or conditions of any kind}, either express or implied. See the License for the specific language governing permissions and limitations under the License.\\ % License information
+
+\noindent \textit{First printing, February 2016} % Printing/edition date
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+
+%\usechapterimagefalse % If you don't want to include a chapter image, use this to toggle images off - it can be enabled later with \usechapterimagetrue
+
+\chapterimage{chapter_head_1.pdf} % Table of contents heading image
+
+\pagestyle{empty} % No headers
+ 
+\tableofcontents % Print the table of contents itself
+
+%\cleardoublepage % Forces the first chapter to start on an odd page so it's on the right
+
+\pagestyle{fancy} % Print headers again
+
+%----------------------------------------------------------------------------------------
+%	PART
+%----------------------------------------------------------------------------------------
+
+%\part{Part One}
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 1
+%----------------------------------------------------------------------------------------
+
+\chapterimage{chapter_head_2.pdf} % Chapter heading image
+
+\chapter{Práctica 1}
+
+\section{Eliminar valores perdidos}\index{Paragraphs of Text}
+
+En muchas ocasiones cuanto trabajamos con un vector, una lista o un data.frame nos encontramos con que hay valores NA \textit{not available} o NaN \textit{not a number}.\\
+Para poder trabajar cómodamente lo ideal es eliminar esos valores, vamos a ver dos formas de hacer esto:\\
+La primera es utilizar la función de R \textbf{is.na()}
+
+\begin{sintaxis}[is.na()]
+Devuelve un vector de TRUE/FALSE del mismo tamaño que el argumento, la posición $i$ es TRUE si x[i] es NA o NaN.
+\end{sintaxis}
+\textbf{Ejemplo:}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> x <- c(2, NA, NaN, 123)
+> x
+[1]   2  NA NaN 123
+> x <- x[!is.na(x)]
+> x
+[1]   2 123
+\end{lstlisting}
+La otra forma es utilizando la función \textbf{complete.cases()} que hace lo mismo pero puede aplicarse a data.frames\\
+\textbf{Ejemplo:}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> x <- c(2, NA, NaN, 123)
+> x
+[1]   2  NA NaN 123
+> x <- x[complete.cases(x)]
+> x
+[1]   2 123
+> x <- c(2, NA, NaN, 123)
+> complete.cases(x)
+[1]  TRUE FALSE FALSE  TRUE
+> !is.na(x)
+[1]  TRUE FALSE FALSE  TRUE
+\end{lstlisting}
+
+\section{Lanzar dos dados}\index{Paragraphs of Text}
+\begin{exercise}
+	Crea una función denominada \textit{puntuación} que simule tirar dos dados, y devuelva la suma. Los lanzamientos deben 	ser independientes.\\
+	Nota: Utiliza la función \textbf{sample}. Deben de poder obteners valores como 2 o 12.
+\end{exercise}
+\textbf{Solución}\\
+Código de la función puntuación para un dado:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> puntuacion <- function(){
+     return(sample(6,1) + sample(6,1));
+}
+\end{lstlisting}
+Observemos la sintaxis de la función sample:\\
+\begin{sintaxis}[sample(x, size, replace = FALSE, prob = NULL)]
+Los parámetros que vamos a considerar importantes por el momento son los tres primeros:
+\begin{itemize}
+\item \textbf{x} indica el conjunto de donde se van a extraer las muestras un número $n$ indica 1...$n$
+\item \textbf{size} indica cuantas muestras vamos a extrar, en nuestro caso solo queremos una de cada dado
+\item \textbf{replace} indica si se pueden repetir muestras, en nuestro caso da igual porque solo vamos a sacar una muestra.
+\end{itemize}
+\end{sintaxis}
+Aquí vemos unas cuantas ejecuciones de la función puntuación tal y como la llevamos:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> puntuacion()
+[1] 3
+> puntuacion()
+[1] 12
+> puntuacion()
+[1] 7
+> puntuacion()
+[1] 9
+\end{lstlisting}
+\textbf{Nota:} Si escribimos "puntuacion" en RStudio podemos ver el código de la función puntuación.\\
+Ahora vamos a redefinir la función para que haga $n$ lanzamientos y los guarde en un vector. Luego vamos a ejecutarla unas cuantas veces para ver como funciona:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> puntuacion <- function(n){
++     vect_punt<-0;
++     for(i in 1:n){
++         vect_punt[i]<-(sample(6,1) + sample(6,1));
++     }
++     return (vect_punt);
++ }
+> puntuacion(12)
+ [1]  9  5 10  4  5  3  8 12  7  6 10  7
+> x<-puntuacion(12)
+> x
+ [1]  8 10  4 10 10 11  3 11  9  7  9  3
+> sort(x)
+ [1]  3  3  4  7  8  9  9 10 10 10 11 11
+\end{lstlisting}
+Parece que funciona correctamente, pero nosotros sabemos que en este experimento la media es 7, veamoslo experimentalmente:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> mean(puntuacion(10000))
+[1] 6.9958
+> mean(puntuacion(10000))
+[1] 7.0069
+\end{lstlisting}
+Podemos además hacer cosas más interesantes como un histograma:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> x<-puntuacion(2000)
+> hist(x, col="blue",breaks = 1:12,main="Tirar 2000 dados dobles", xlab = "Score")
+\end{lstlisting}
+Que devuelve la siguiente figura:
+
+\begin{figure}[htbp]
+\includegraphics[scale=0.7]{Pictures/2000dados.png}
+\end{figure}
+
+%------------------------------------------------
+
+\section{Baraja Española}
+\begin{exercise}
+Vamos a manipular la baraja española, a barajarla y a robar de la baraja. Para ello será necesario
+crear la baraja: un dataframe y dos funciones \textit{barajar} y \textit{robar}.
+\end{exercise}
+\textbf{Solución}\\
+Para crear la baraja vamos a utilizar la función \textbf{expand.grid()} que genera un data.frame con todas las combinaciones posibles de elementos de los vectores que se le meten como parámetros.
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+BarajaESP<-function(){
+    figuras <- c(1:7, "Sota", "Caballo", "Rey");
+    palos <- c("Espadas", "Oros", "Copas", "Bastos");
+    baraja <- expand.grid(Carta = figuras, Palo = palos);
+    return(baraja)
+}
+\end{lstlisting}
+Devuelve el siguiente data.frame:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> baraja<-BarajaESP()
+> baraja> baraja
+     Carta    Palo
+1        1 Espadas
+2        2 Espadas
+3        3 Espadas
+4        4 Espadas
+5        5 Espadas
+6        6 Espadas
+7        7 Espadas
+8     Sota Espadas
+9  Caballo Espadas
+10     Rey Espadas
+11       1    Oros
+12       2    Oros
+..................
+37       7  Bastos
+38    Sota  Bastos
+39 Caballo  Bastos
+40     Rey  Bastos
+}
+\end{lstlisting}
+Podemos incluso hacer un plot de baraja y veremos la baraja así:
+
+\begin{figure}
+\includegraphics[scale=0.5]{baraja.png}
+
+\end{figure}
+
+\pagebreak
+Para la función de barajar volvemos a utilizar la función \textbf{sample}:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> barajar <- function(baraja){
+    tmp <- baraja;
+    orden <- sample(1:40,40,replace = FALSE);
+    for(i in orden){
+        tmp[i, 1:2] <- baraja[orden[i], 1:2]
+    }
+    return(tmp)
+}
+\end{lstlisting}
+Tenemos en cuenta que tmp será un nuevo dataframe que al principio contendrá la baraja en el mismo orden.
+Pero poco a poco vamos reemplazando las cartas, para ello hacemos una permutación de los primeros 40 naturales y la guardamos en \textit{orden} después aplicamos esa permutación a las cartas.\\
+Es importante darse observar que \textit{baraja[i, 1:2]} es la forma de representar la carta i-esima de la baraja, utilizamos \textit{1:2} para indicar "número y palo".
+
+La función \textbf{robar()} es más sencilla y no requiere explicación:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> robar <- function(baraja){
+    return(baraja[sample(1:40,1, replace = FALSE), 1:2])
+}
+> robar(baraja)
+   Carta Palo
+11     1 Oros
+> robar(baraja)
+   Carta Palo
+14     4 Oros
+\end{lstlisting}
+Es importante apreciar que esta forma de robar va volviendo a colocar la carta en la baraja, por tanto es posible robar dos veces la misma carta.
+
+\chapter{Práctica 2}
+\section{Generación y Visualización de Datos}\index{Paragraphs of Text}
+\begin{exercise}
+Construir una función $lista = simula\_unif(N,dim,rango)$ que calcule una lista de longitud N de vectores de dimension dim conteniendo números aleatorios uniformes en el intervalo rango.
+\end{exercise}
+
+Parece que lo más natural es crear una función que utilice \textbf{runif()} que es una función de R que genera números siguiendo una distribución uniforme y a partir de ello devolver una matriz $N \times dim$
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+simula_unif<-function(N, dim, minimo, maximo){
+    unif<-matrix(nrow = dim, ncol = N);
+    for(i in 1:N){
+        unif[,i] <- runif(dim,minimo, maximo)
+    }
+    return(unif);
+}
+\end{lstlisting}
+Pero como nos pide que sea una lista hacemos que la variable unif sea una lista (y por tanto accedemos a las componentes con \textbf{[[·]]})
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> simula_unif<-function(N, dim, minimo, maximo){
+     unif<-list();
+     for(i in 1:N){
+         unif[[i]] <- runif(dim,minimo, maximo)
+     }
+     return(unif);
+}
+> lista_uniforme <- simula_unif(N=3,dim=4,-1,1)
+> lista_uniforme
+[[1]]
+[1]  0.0386862 -0.1860388  0.9824784  0.2079370
+
+[[2]]
+[1]  0.888472 -0.454218 -0.932526 -0.543044
+
+[[3]]
+[1]  0.79459142  0.60399254 -0.15797747 -0.06230832
+\end{lstlisting}
+Podemos ver si funciona correctamente mediante un histograma:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> lista_unif<-simula_unif(N=1,dim = 500,-1,1)
+> hist(lista_unif[[1]], col = "yellow",main = "Distribucion Uniforme - 500 muestras",xlab = "Valor")
+\end{lstlisting}
+
+\begin{figure}[h]
+\includegraphics[scale=0.7]{Pictures/DistUniforme.png}
+\end{figure}
+
+\begin{exercise}
+Construir una función $lista = simula\_gaus(N,dim,sigma)$ que calcule una lista de longitud N de vectores de dimension dim conteniendo números aleatorios gaussianos de media 0  y varianzas dadas por el vector \textit{sigma}.
+\end{exercise}
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> simula_gaus <- function(N, dim, sigma){
+    normal<-list();
+    for(i in 1:N){
+        normal[[i]] <- rnorm(n =dim, mean=0,sd = sigma[i]);
+    }
+    return(normal)
+}
+> x<-simula_gaus(4,400,c(1,3,5,7))
+> plot(x[[4]], col="black", ylab = "Valor", xlab = "Indice", pch=4)
+> points(x[[3]], col="red", pch=4)
+> points(x[[2]], col="blue", pch=4)
+> points(x[[1]], col="green", pch=4)
+\end{lstlisting}
+Podemos ver el resultado de las últimas ordenes del cuadro de código anterior en la siguiente figura.\\
+Se aprecia claramente como los puntos más dispersos corresponden a las que tienen mayor desviación típica (sigma)
+\begin{figure}[h]
+\includegraphics[scale=0.6]{Pictures/dispNormal.png}
+\end{figure}
+
+\begin{exercise}
+Suponer N = 50, dim=2, rango = [-50, 50] en cada dimensión. Dibujar una gráfica de la salida de la función correspondiente.
+\end{exercise}
+Creamos una función para que nos haga todo automáticamente:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+plotUnif<-function(N, minimo, maximo){
+    x <- c();
+    y <- c();
+    puntos <- list();
+    puntos <- simula_unif(N, 2, minimo, maximo);
+    for(i in 1:N){
+        x[i] <- puntos[[i]][[1]];
+        y[i] <- puntos[[i]][[2]];
+    }
+    plot(x, y);
+}
+\end{lstlisting}
+En la siguiente figura aparece una ejecución de la orden \textit{>plotUnif(50, -50, 50)}:
+
+\includegraphics[scale=0.6]{Pictures/uniforme50x-50to50.png}
+
+Observación:\\
+La forma de almacenar las coordenadas $x$ e $y$ de nuestra lista de puntos no es muy apropiada para trabajar en R tal y como lo estamos haciendo. Es decir como una lista con la siguiente estructura: $(x_1, y_1) ; (x_2, y_2) ; ... ; (x_n, y_n)$ \\
+Una forma de almacenar los puntos que simplifica las implementaciones en R es la siguiente:\\
+Lista de puntos = $(x_1, x_2, ..., x_n) ; (y_1, y_2, ..., y_n)$\\
+En el siguiente ejercicio vamos a reescribir la función $simula\_gaus()$ para adaptarla a esta estructura y luego vamos a dibujar:
+\begin{exercise}
+Suponer N = 50, dim=2, sigma = [5, 7] en cada dimensión. Dibujar una gráfica de la salida de la función correspondiente.
+\end{exercise}
+Función simula\_gaus() \textit{(versión 2)}
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+simula_gaus <- function(N, dim, sigma){
+    puntos <- list();
+    for(i in 1:dim){
+        xi <- c();
+        xi <- rnorm(N, 0, sigma[i]);
+        puntos[[i]]<-xi;
+    }
+    return(puntos);
+}
+\end{lstlisting}
+La forma en la que utilizamos la función es la misma que usabamos en la primera versión pero la estructura que devuelve es diferente:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> simula_gaus(20, 2, c(5,7))
+[[1]]
+ [1] -2.4491073 -3.2584142  2.3869703 -9.8788259  0.1670119  6.2144173  4.5063578  3.1975652
+ [9] -2.0464434  1.0344226 -2.0405586 -8.9180882 -1.5210091 -1.4812887 -3.1102648 -2.3895402
+[17] -6.4188965  1.5368615  1.7382187 -6.1144230
+
+[[2]]
+ [1]  -6.8042244   0.1074266  -3.0641119   4.0550469  -2.6651593  -1.2383127   1.5766815  -3.0189121
+ [9]   5.9075899 -12.1843298   0.9067658  -3.4628036  -6.5992591  -8.4734840  -3.9468448  -2.1081100
+[17]  11.1544907   3.4082678   0.1045350  -5.2854292
+\end{lstlisting}
+Vamos a hacer una función para dibujar nubes de puntos en las que la coordenada $X$ sigue una distribución normal y la coordenada $Y$ sigue otra distribución normal diferente:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+plotGaus2D <- function(N, sigma1, sigma2){
+    puntos <- list();
+    puntos <- simula_gaus(N, 2, c(sigma1,sigma2))
+    plot(puntos[[1]], puntos[[2]],col="brown", pch=1, main = "Distribucion Gaussiana en R^2", ylab = "Coordenada Y", xlab = "Coordenada X")
+}
+\end{lstlisting}
+Notamos que esta función solo dibuja en $R^2$ pero ampliarla a $R^n$ es bastante sencillo.//
+La gráfica que pide el encunciado puede obtenerse ejecutando: plotGaus2D(50, 5, 7)
+\begin{figure}[h]
+\includegraphics[scale=0.6]{Pictures/gaussDist.png}
+\end{figure}
+
+\begin{exercise}
+Construir la función $v = simula\_recta(intervalo)$ que calcula los parametros $ v = (a,b) $ de una recta aleatoria 
+$y = ax + b$, que corte al cuadrado $[-50,50]\times[-50,50]$\\
+(Ayuda: Para calcular la recta simula las coordenadas de dos puntos y usalos para obtener $(a,b)$)
+\end{exercise}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+simula_recta <- function(min, max){
+    x <- c();
+    y <- c();
+    x <- runif(2, min, max);
+    y <- runif(2, min, max);
+    a <- (y[2] - y[1]) / (x[2] - x[1]);
+    b <- -a*x[1] + y[1];
+    v <- c(a, b);
+    return(v);
+}
+\end{lstlisting}
+\subsection{Modelo lineal}
+\begin{exercise}
+Genera una muestra uniforme usando simula\_unif() y etiqueta la muestra usando el signo de la función $f(x,y) = y - ax - b$
+de cada punto a una recta simulada con simula\_recta(). Mostrar una gráfica con el resultado junto con la recta usada para ello.
+\end{exercise}
+En primer lugar vamos a modificar la función simula\_unif() para que saque una lista con dos elementos (coordenadas $x$ y coordenadas $y$).
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> simula_unif <- function(N, dim, minimo, maximo){
+    puntos <- list();
+    for(i in 1:dim){
+        xi <- c();
+        xi <- runif(N, minimo, maximo);
+        puntos[[i]] <- xi;
+    }
+    return(puntos)
+}
+\end{lstlisting}
+Hecho esto ya podemos hacer la función plotEtiquetas() con más facilidad:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> plotEtiquetas <- function(N, min, max){
+    v <- simula_recta(min, max);
+    a <- v[1];
+    b <- v[2];
+    puntos <- simula_unif(N, dim=2, min, max);
+    colores <- c();
+    forma <- c();
+    for(i in 1:N){
+        if(puntos[[2]][[i]] - a*puntos[[1]][[i]] - b > 0){
+            colores[i] <- "red";
+            forma[i] <- 1;
+        }
+        else{
+            colores[i] <- "blue";
+            forma[i] <- 3;
+        }
+    }
+    plot(puntos[[1]], puntos[[2]], col=colores, pch=forma, xlab="Coord X", ylab="Coord Y", main = "Clasificacion Basica");
+    curve(a*x + b, add=TRUE);
+}
+\end{lstlisting}
+Podemos ejecutar \textbf{plotEtiquetas(100, -10, 10)} con un resultado como este:
+\begin{figure}[h]
+\includegraphics[scale=0.7]{Pictures/Clasificacion.png}
+\end{figure}
+
+Como ahora queremos clasificar nubes de puntos de diferentes formas vamos a crear una función más general a la cual se le va a pasar una lista de puntos en el formato en el que estamos acostumbrados y los parámetros $a$ y $b$ de la recta que usaremos para clasificar.\\
+Esto es una solución más general del ejercicio:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+clasificaPuntosRecta <- function(puntos, a, b){
+    xtipo1 <- c();
+    ytipo1 <- c();
+    xtipo2 <- c();
+    ytipo2 <- c();
+    
+    N <- length(puntos[[1]]);
+    
+    for(i in 1:N){
+        if(puntos[[2]][[i]] - a*puntos[[1]][[i]] - b > 0){
+            xtipo1 <- c(xtipo1, puntos[[1]][[i]]);
+            ytipo1 <- c(ytipo1, puntos[[2]][[i]]);
+        }
+        else{
+            xtipo2 <- c(xtipo2, puntos[[1]][[i]]);
+            ytipo2 <- c(ytipo2, puntos[[2]][[i]]);
+        }
+    }
+    
+    #Limites de los ejes para el plot:
+    miny = min(ytipo1, ytipo2);
+    maxy = max(ytipo1, ytipo2);
+    minx = min(xtipo1, xtipo2);
+    maxx = max(xtipo1, xtipo2);
+    
+    plot(xtipo1, ytipo1, col="red", pch=1, xlab="Coord X", ylab="Coord Y", main = "Clasificacion Basica", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+    points(xtipo2, ytipo2, col="blue", pch=4);
+    curve(a*x + b, add=TRUE);
+    return(list(xtipo1, ytipo1, xtipo2, ytipo2));
+}
+\end{lstlisting}
+
+La función \textbf{clasificaPuntosRecta(Puntos, a, b)} clasifica los puntos que hay en la lista \textit{Puntos} con dos etiquetas en función del signo de su distancia a la recta $y = ax + b$\\
+Podemos ver un ejemplo con la recta $y=x$ y otro con una recta aleatoria:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> misPuntos <- simula_unif(50, 2, -50, 50)
+> clasificaPuntosRecta(misPuntos, 1, 0)
+\end{lstlisting}
+
+\begin{figure}[h]
+\includegraphics[scale=0.7]{Pictures/clasificacion2.png}
+\end{figure}
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> recta <- simula_recta(-50, 50)
+> clasificaPuntosRecta(misPuntos, recta[1], recta[2])
+
+\end{lstlisting}
+
+\begin{figure}
+\includegraphics[scale=0.7]{Pictures/clasificacion_recta_aleatoria.png}
+\end{figure}
+
+\begin{exercise}
+Usar la muestra generada en el apartado anterior y etiquetarla con $+1, -1$ usando el signo de cada una de las siguientes funciones:\\
+\begin{itemize}
+\item $f_1(x,y) = (x-10)^2 + (y-20)^2 - 400$
+\item $f_2(x,y) = 0.5(x+10)^2 +(y- 20)^2 - 400$
+\item $f_3(x,y) = 0.5(x-10)^2 -(y + 20)^2 - 400$
+\item $f_4(x,y) = y - 20x^2 - 5x+3$
+\end{itemize}
+\end{exercise}
+\subsection{Modelo Circular}
+Observemos en primer lugar que $f_1(x,y)=0$ representa una circunferencia, luego clasificar los puntos en función del signo de  $f_1(x,y)$ es clasificar puntos dependiendo de que estén dentro o fuera de la circunferencia $\{(x,y) \in \mathbb{R}^2 : (x-10)^2 + (y-20)^2 - 400 = 0\}$.\\
+Por eso vamos además a crear una subfuncion en R llamada \textbf{draw.circle} para que se vea más claro como está funcionando la clasificación.\\
+El código en R de la clasificación atendiendo al signo de $f_1$ es el siguiente:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+clasificaPuntosFuncion1 <- function(puntos){
+    xtipo1 <- c();
+    ytipo1 <- c();
+    xtipo2 <- c();
+    ytipo2 <- c();
+    
+    N <- length(puntos[[1]]);
+    
+    ### Editar Funcion para cambiar la forma de clasificar
+    mifuncion <- function(x,y){
+        return((x-10)^2 + (y-20)^2 - 400);
+    }
+    
+    ### Funcion para dibujar circulos 
+    draw.circle <- function(x,y, radius){
+        theta <- seq(0, 2 * pi, length = 200);
+        # draw the circle
+        lines(x = radius * cos(theta) + x, y = radius * sin(theta) + y);
+    }
+    
+    
+    for(i in 1:N){
+        if(mifuncion(puntos[[1]][[i]],puntos[[2]][[i]]) > 0){
+            xtipo1 <- c(xtipo1, puntos[[1]][[i]]);
+            ytipo1 <- c(ytipo1, puntos[[2]][[i]]);
+        }
+        else{
+            xtipo2 <- c(xtipo2, puntos[[1]][[i]]);
+            ytipo2 <- c(ytipo2, puntos[[2]][[i]]);
+        }
+    }
+    
+    #Limites de los ejes para el plot:
+    miny = min(ytipo1, ytipo2);
+    maxy = max(ytipo1, ytipo2);
+    minx = min(xtipo1, xtipo2);
+    maxx = max(xtipo1, xtipo2);
+    
+    plot(xtipo1, ytipo1, col="red", pch=1, xlab="Coord X", ylab="Coord Y", 
+         main = "Clasificacion por circulos", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+    points(xtipo2, ytipo2, col="blue", pch=4);
+    draw.circle(10, 20, sqrt(400));
+    return(list(xtipo1, ytipo1, xtipo2, ytipo2));
+}
+\end{lstlisting}
+Para aplicar esta clasificación a los datos que teníamos en el ejercicio anterior ejecutamos:\\ 
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+	> clasificaPuntosFuncion1(misPuntos)
+\end{lstlisting}
+y obtenemos el siguiente gráfico:
+
+\includegraphics[scale=0.7]{Pictures/clasifica_circulos.png}
+\subsection{Modelo Elíptico}
+La clasificación en función de $f_2$ es bastante parecida a la primera, pero en este caso la figura es una elipse.\\
+Podemos hacer una función draw.elipse(x,y, a,b) donde $(x,y)$ es el centro y $(a,b)$ son los semiejes $X$ e $Y$ de la elipse.
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> clasificaPuntosFuncion2 <- function(puntos){
+    xtipo1 <- c();
+    ytipo1 <- c();
+    xtipo2 <- c();
+    ytipo2 <- c();
+    
+    N <- length(puntos[[1]]);
+    
+    ### Editar Funcion para cambiar la forma de clasificar
+    mifuncion <- function(x,y){
+        return(0.5*(x+10)^2 + (y-20)^2 - 400);
+    }
+
+    ### Funcion para dibujar elipses
+    draw.elipse <- function(x=0,y=0,a=1,b=1){
+        theta <- seq(0, 2 * pi, length = 200);
+        # draw the circle
+        lines(x = a*cos(theta) + x, y = b*sin(theta) + y);
+    }
+    
+    
+    for(i in 1:N){
+        if(mifuncion(puntos[[1]][[i]],puntos[[2]][[i]]) > 0){
+            xtipo1 <- c(xtipo1, puntos[[1]][[i]]);
+            ytipo1 <- c(ytipo1, puntos[[2]][[i]]);
+        }
+        else{
+            xtipo2 <- c(xtipo2, puntos[[1]][[i]]);
+            ytipo2 <- c(ytipo2, puntos[[2]][[i]]);
+        }
+    }
+    
+    #Limites de los ejes para el plot:
+    miny = min(ytipo1, ytipo2);
+    maxy = max(ytipo1, ytipo2);
+    minx = min(xtipo1, xtipo2);
+    maxx = max(xtipo1, xtipo2);
+    
+    plot(xtipo1, ytipo1, col="red", pch=1, xlab="Coord X", ylab="Coord Y", 
+         main = "Clasificacion por elipses", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+    points(xtipo2, ytipo2, col="blue", pch=4);
+    draw.elipse(-10, 20, sqrt(400)/sqrt(0.5), sqrt(400));
+    return(list(xtipo1, ytipo1, xtipo2, ytipo2));
+}
+\end{lstlisting}
+
+\begin{figure}[h]
+\includegraphics[scale=0.7]{Pictures/clasificacion_elipses.png}
+\end{figure}
+\subsection{Modelo Hiperbólico}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+clasificaPuntosFuncion3 <- function(puntos){
+    xtipo1 <- c();
+    ytipo1 <- c();
+    xtipo2 <- c();
+    ytipo2 <- c();
+    
+    N <- length(puntos[[1]]);
+    
+    ### Editar Funcion para cambiar la forma de clasificar
+    mifuncion <- function(x,y){
+        return(0.5*(x+10)^2 - (y+20)^2 - 400);
+    }
+
+    ### Funcion para dibujar hiperbola
+    draw.hiperbola <- function(x=0,y=0,a=1,b=1){
+        theta <- seq(0, 2 * pi, length = 200);
+        # draw
+        lines(x = a*(1/cos(theta)) + x, y =  b*tan(theta) + y);
+    }
+    
+    
+    for(i in 1:N){
+        if(mifuncion(puntos[[1]][[i]],puntos[[2]][[i]]) > 0){
+            xtipo1 <- c(xtipo1, puntos[[1]][[i]]);
+            ytipo1 <- c(ytipo1, puntos[[2]][[i]]);
+        }
+        else{
+            xtipo2 <- c(xtipo2, puntos[[1]][[i]]);
+            ytipo2 <- c(ytipo2, puntos[[2]][[i]]);
+        }
+    }
+    
+    #Limites de los ejes para el plot:
+    miny = min(ytipo1, ytipo2);
+    maxy = max(ytipo1, ytipo2);
+    minx = min(xtipo1, xtipo2);
+    maxx = max(xtipo1, xtipo2);
+    
+    plot(xtipo1, ytipo1, col="red", pch=1, xlab="Coord X", ylab="Coord Y", 
+         main = "Clasificacion por hiperbolas", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+    points(xtipo2, ytipo2, col="blue", pch=4);
+    draw.hiperbola(-10, -20, sqrt(400)/sqrt(0.5), sqrt(400));
+    return(list(xtipo1, ytipo1, xtipo2, ytipo2));
+}
+\end{lstlisting}
+
+\includegraphics[scale=0.7]{Pictures/clasificacion_hiperbolas.png}
+
+\subsection{Modelo Parabólico}
+Por último vamos a hacer una clasificación mediante una parábola:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+clasificaPuntosFuncion4 <- function(puntos){
+    xtipo1 <- c();
+    ytipo1 <- c();
+    xtipo2 <- c();
+    ytipo2 <- c();
+    
+    N <- length(puntos[[1]]);
+    
+    ### Editar Funcion para cambiar la forma de clasificar
+    mifuncion <- function(x,y){
+        return(y - 20*x^2 - 5*x+3);
+    }
+    
+    for(i in 1:N){
+        if(mifuncion(puntos[[1]][[i]],puntos[[2]][[i]]) > 0){
+            xtipo1 <- c(xtipo1, puntos[[1]][[i]]);
+            ytipo1 <- c(ytipo1, puntos[[2]][[i]]);
+        }
+        else{
+            xtipo2 <- c(xtipo2, puntos[[1]][[i]]);
+            ytipo2 <- c(ytipo2, puntos[[2]][[i]]);
+        }
+    }
+    
+    #Limites de los ejes para el plot:
+    miny = min(ytipo1, ytipo2);
+    maxy = max(ytipo1, ytipo2);
+    minx = min(xtipo1, xtipo2);
+    maxx = max(xtipo1, xtipo2);
+    
+    plot(xtipo1, ytipo1, col="red", pch=1, xlab="Coord X", ylab="Coord Y", 
+         main = "Clasificacion por Parabolas", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+    points(xtipo2, ytipo2, col="blue", pch=4);
+    curve(expr = (y = 20*x^2 + 5*x -3),add = TRUE);
+    return(list(xtipo1, ytipo1, xtipo2, ytipo2));
+}
+\end{lstlisting}
+
+\includegraphics[scale=0.7]{Pictures/clasificacion_parabolas.png}
+
+\textbf{Interpretación de las formas de las regiones:}\\
+La clasificación lineal corresponde a una $f(x,y)$ cuya gráfica es un plano en $\mathbb{R}^3$ y la clasificación que hacemos es "rojo" si $(x,y,f(x,y))\in \mathbb{R}^3$ queda por encima del plano $z=0$ y "azul" en caso contrario.\\
+La recta de la frontera de decisión corresponde a la intersección de la gráfica de $f$ y el plano $z=0$.\\
+En general la forma de la frontera de decisión entre las regiones positiva y negativa depende de la función $f$:\\
+Podemos ver $f$ como un campo de potencial y la frontera de clasificación como la linea de nivel correspondiente al $0$. Los puntos que tienen un \textit{"potencial"} positivo se corresponden a la etiqueta roja y los que tienen \textit{"potencial"} negativo son los que corresponden a la etiqueta azul.
+
+\subsection{Alteración de muestras}
+Vamos a simular el ruido en una muestra mediante el cambio de algunas etiquetas.\\
+Para ello primero vamos a clasificar una nube de puntos (en este caso lo haremos mediante una recta) y luego vamos a alterar el 10\% de las etiquetas.\\
+
+\begin{exercise}
+Considerar una muestra como la etiquetada en el ejercicio de clasificación mediante un modelo lineal. Modifique las etiquetas de un 10\% aleatorio de muestras positivas y otro 10\% aleatorio de negativas
+\end{exercise}
+Solución:\\
+Para la alteración de las etiquetas vamos a utilizar la siguiente función a la cual hay que pasarle puntos \textbf{ya etiquetados}, como los que devuelven las 
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> alterarClasificacion <- function(puntosClasificados, prob){
+    N <- length(puntosClasificados[[1]]);
+    vector_intercambio <- sample(x = c(1,-1),size = N, replace = TRUE, prob = c(1-prob, prob))
+    puntosClasificados[[3]] = puntosClasificados[[3]]*vector_intercambio;
+    return(puntosClasificados)
+}
+\end{lstlisting}
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> plotPuntosClasificados <- function(puntos, a, b){
+    plot(puntos[[1]], puntos[[2]], col=puntos[[3]]+3, pch=puntos[[3]]+2, xlab="Coord X", ylab="Coord Y", main = "Clasificacion Basica");
+    curve(a*x + b, add=TRUE);
+}
+\end{lstlisting}
+
+Ahora vamos a ver la diferencia entre las dos:\\
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> misOtrosPuntosClasificadosAlter <- alterarClasificacion(misOtrosPuntosClasificados, 0.1)
+> plotPuntosClasificados(misOtrosPuntosClasificadosAlter, v[1], v[2])
+\end{lstlisting}
+
+\includegraphics[scale=0.7]{Pictures/PuntosClasificadosEj8.png}
+
+
+\includegraphics[scale=0.7]{Pictures/PuntosAlterados.png}
+
+\pagebreak
+
+\subsection{Aceleración de R}
+La función que hemos creado utiliza un \textit{bucle for} por dentro, esto podría ser una buena solución en lenguajes como C++ en el que los bucles son muy eficientes, pero en el caso de R el bucle for es una estructura muy lenta.\\
+De hecho es trabajar con bucles for es unas 50 veces más lento que trabajar con vectores aprovechando su estructura vectorial:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> sumaF <- function(f, a,k){ 
+    suma=0;
+    for(i in a:k){
+		suma = suma+f(i);
+	}
+	return(suma);
+}
+# Version vectorizada
+> sumaV <- function(f, a,k){ 
+	i = a:k;
+    sum(f(i))
+}
+> # install.packages("rbenchmark") # descomentar para instalar el paquete "rbenchmark"
+> library(rbenchmark)
+> k = 10000000 #k = 10 millones
+> f = function(n) 1/n^2
+> benchmark(sumaF(f, 1, k),sumaV(f, 1, k),replications = 5)[,c(1,3,4)]
+            test elapsed relative
+1 sumaF(f, 1, k)  48.434   53.224
+2 sumaV(f, 1, k)   0.910    1.000
+
+\end{lstlisting}
+
+Por esto mismo sería conveniente modificar la estructura interna de nuestras funciones en caso de trabajar con conjuntos de puntos muy grandes.\\
+Una posible modificación para el clasificador mediante una recta es la siguiente:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> clasificaPuntosRectav2 <- function(puntos, a, b){
+        # tipo[i] = 1 o -1 ya que TRUE es 1 y FALSE es 0
+        # La funcion f(x) = 2x-1 lleva el 0 al -1 y el 1 al 1
+        # Por tanto tipo es un vector de -1 y 1 
+        tipo <- 2*(puntos[[2]] - a*puntos[[1]] - b > 0) - 1;
+        
+        #Limites de los ejes para el plot:
+        miny = min(puntos[[2]]);
+        maxy = max(puntos[[2]]);
+        minx = min(puntos[[1]]);
+        maxx = max(puntos[[1]]);
+        
+        plot(puntos[[1]], puntos[[2]], col=tipo+3, pch=1, xlab="Coord X", ylab="Coord Y", main = "Clasificacion Basica", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+        curve(a*x + b, add=TRUE);
+        return(list(puntos[[1]], puntos[[2]], tipo));
+    }
+\end{lstlisting}
+
+Como vemos en el siguiente fragmento de código el rendimiento mejora sustanciosamente:\\
+Para una muestra de 100.000 puntos la primera versión (usando un bucle for) tarda 147 segundos en hacer la clasificación.
+Por el contrario la segunda versión (usando la estructura vectorial del problema) tarda tan solo 8.4 segundos en hacer el mismo trabajo. \textbf{17 veces más rápido!!}
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> misPuntos <- simula_unif(100000, 2, -100,100)
+> v <- simula_recta(-100, 100);
+> benchmark(clasificaPuntosRecta(misPuntos,v[1],v[2]),clasificaPuntosRectav2(misPuntos,v[1],v[2]),replications = 3)
+                                           test replications elapsed relative user.self sys.self
+1   clasificaPuntosRecta(misPuntos, v[1], v[2])            3 147.163    17.36   103.816   42.611
+2 clasificaPuntosRectav2(misPuntos, v[1], v[2])            3   8.477     1.00     8.377    0.065
+\end{lstlisting}
+Una solución mejorada para los otros modelos es la siguiente:\\
+\textbf{Modelo Circular:}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+clasificaPuntosFuncion1v2 <- function(puntos){
+    ### Editar Funcion para cambiar la forma de clasificar
+    mifuncion <- function(x,y){
+        return((x-10)^2 + (y-20)^2 - 400);
+    }
+    ### Funcion auxiliar para dibujar circulos 
+    draw.circle <- function(x,y, radius){
+        theta <- seq(0, 2 * pi, length = 200);
+        # draw the circle
+        lines(x = radius * cos(theta) + x, y = radius * sin(theta) + y);
+    }
+    
+    #Vector de clasificacion:
+    tipo <- 2*(mifuncion(puntos[[1]], puntos[[2]]) > 0) - 1
+    
+    #Limites de los ejes para el plot:
+    miny = min(puntos[[2]]);
+    maxy = max(puntos[[2]]);
+    minx = min(puntos[[1]]);
+    maxx = max(puntos[[1]]);
+    
+    plot(puntos[[1]], puntos[[2]], col=tipo+3, pch=1, xlab="Coord X", ylab="Coord Y", main = "Clasificacion por Circulos", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+    draw.circle(10, 20, sqrt(400));
+    return(list(puntos[[1]], puntos[[2]], tipo));
+}
+\end{lstlisting}
+
+\textbf{Modelo Eliptico:}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+clasificaPuntosFuncion2v2 <- function(puntos){
+    ### Editar Funcion para cambiar la forma de clasificar
+    mifuncion <- function(x,y){
+        return(0.5*(x+10)^2 + (y-20)^2 - 400);
+    }
+    
+    ### Funcion para dibujar elipses
+    draw.elipse <- function(x=0,y=0,a=1,b=1){
+        theta <- seq(0, 2 * pi, length = 200);
+        # draw the circle
+        lines(x = a*cos(theta) + x, y = b*sin(theta) + y);
+    }
+    
+    #Vector de clasificacion:
+    tipo <- 2*(mifuncion(puntos[[1]], puntos[[2]]) > 0) - 1
+    
+    #Limites de los ejes para el plot:
+    miny = min(puntos[[2]]);
+    maxy = max(puntos[[2]]);
+    minx = min(puntos[[1]]);
+    maxx = max(puntos[[1]]);
+    
+    plot(puntos[[1]], puntos[[2]], col=tipo+3, pch=tipo+4, xlab="Coord X", ylab="Coord Y", main = "Clasificacion por Elipses", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+    draw.elipse(-10, 20, sqrt(400)/sqrt(0.5), sqrt(400));
+    return(list(puntos[[1]], puntos[[2]], tipo));
+}
+\end{lstlisting}
+
+\textbf{Modelo Hiperbólico:}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> clasificaPuntosFuncion4v2 <- function(puntos){
+    ### Editar Funcion para cambiar la forma de clasificar
+    mifuncion <- function(x,y){
+        return(0.5*(x+10)^2 - (y+20)^2 - 400);
+    }
+    
+    ### Funcion para dibujar hiperbola
+    draw.hiperbola <- function(x=0,y=0,a=1,b=1){
+        theta <- seq(0, 2 * pi, length = 200);
+        # draw
+        lines(x = a*(1/cos(theta)) + x, y =  b*tan(theta) + y);
+    }
+    
+    #Vector de clasificacion:
+    tipo <- 2*(mifuncion(puntos[[1]], puntos[[2]]) > 0) - 1
+    print(tipo);
+    #Limites de los ejes para el plot:
+    miny = min(puntos[[2]]);
+    maxy = max(puntos[[2]]);
+    minx = min(puntos[[1]]);
+    maxx = max(puntos[[1]]);
+    
+    plot(puntos[[1]], puntos[[2]], col=tipo+3, pch=tipo+4, xlab="Coord X", ylab="Coord Y", main = "Clasificacion por Hiperbolas", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+    draw.hiperbola(-10, -20, sqrt(400)/sqrt(0.5), sqrt(400));
+    return(list(puntos[[1]], puntos[[2]], tipo));
+}
+\end{lstlisting}
+
+\textbf{Modelo Parabólico:}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> clasificaPuntosFuncion3v2 <- function(puntos){
+      ### Editar Funcion para cambiar la forma de clasificar
+      mifuncion <- function(x,y){
+          return(y - 20*x^2 - 5*x+3);
+      }
+    
+      #Vector de clasificacion:
+      tipo <- 2*(mifuncion(puntos[[1]], puntos[[2]]) > 0) - 1
+      
+      #Limites de los ejes para el plot:
+      miny = min(puntos[[2]]);
+      maxy = max(puntos[[2]]);
+      minx = min(puntos[[1]]);
+      maxx = max(puntos[[1]]);
+    
+    plot(puntos[[1]], puntos[[2]], col=tipo+3, pch=tipo+4, xlab="Coord X", ylab="Coord Y", main = "Clasificacion por Parabolas", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+    curve(expr = (y = 20*x^2 + 5*x -3),add = TRUE);
+    return(list(puntos[[1]], puntos[[2]], tipo));
+}
+\end{lstlisting}
+
+Si en el problema no se puede aprovechar la vectorización hay otra alternativa: El paquete \textbf{Rcpp} (Rc++) permite meter código en C++ dentro de funciones R, con lo que podemos optimizar los bucles internos de nuestros programas para hacerlos capaces de procesar grandes cantidades de datos en un tiempo razonable.
+
+\section{Introducción a las Redes Neuronales - El Perceptrón Simple}
+El perceptrón simple según muchos autores es el tipo de \textit{Red Neuronal} más simple que exisite. Ya que es una red neuronal compuesta por una sola neurona. Para entender el perceptrón no es necesario tener ningún conocimiento previo:\\
+Nuestro objetivo es distinguir entre dos tipos de elementos, el primer tipo de elementos lo vamos a etiquetar con 1 y el segundo tipo con -1 pero podríamos verlos como rojo y azul o cualquier otra característica.\\
+A nosotros se nos da una muestra de elementos etiquetados, nosotros le damos esos datos al perceptrón y él los clasifica mediante un hiperplano. Es como lo que hemos hecho en las secciones previas al clasificar mediante una recta.\\
+Hemos de observar que el perceptrón sólo funcionará cuando nuestra muestra de elementos pueda \textbf{separarse linealmente}, es decir, cuando exista un hiperplano que deje las muestras etiquetadas con 1 a un lado y al otro lado deje las etiquetadas con -1.
+
+\subsection{El algoritmo PLA (\textit{Perceptron Learning Algorithm)}}
+\begin{exercise}
+Implementar la función \textbf{sol = ajusta\_PLA(datos, label, max\_iter, v\_ini)} 
+que calcula el hiperplano solución a un problema de clasificación binaria usando el algoritmo PLA.\\
+La entrada \textit{datos} es una matriz donde cada item con su etiqueta está representado por una fila de la matriz, \textit{label} el vectorde etiquetas (cada etiqueta es un valor $+1$ o $-1$), \textit{max\_iter} es el número 
+máximo de iteraciones permitidas y \textit{v\_ini} el valor inicial del vector de pesos. \\
+La salida \textit{sol} devuelve los coeficientes del hiperplano.
+\end{exercise}
+\textbf{Solución:}
+\lstset{escapeinside=¿}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> ajusta_PLA <- function(datos, label, max_iter, v_ini){
+    w <- v_ini;
+    w[ncol(datos)]=0;
+    N <- nrow(datos);
+    dim <- ncol(datos)-1;
+    salir = FALSE;
+    for(h in 1:max_iter){
+        salir <- TRUE;
+        for(i in 1:N){
+            x <- c(datos[i,1:dim],1);
+            if( sign(w ¿%*%¿ x) != label[i]){
+                w <- w + label[i]*x
+                salir <- FALSE;
+            }
+        }
+        if(salir == TRUE){
+            break
+        }
+    }
+    coefs <- c(-w[1]/w[2], -w[3]/w[2])
+    return(coefs)
+}
+\end{lstlisting}
+
+Vamos a probarlo con la muestra que tenemos ya clasificada y probemos a cambiar \textit{v\_ini} para ver
+cuantas rondas necesita para converger.\\
+\begin{exercise}
+Ejecutar el algoritmo PLA con los valores simulados en el apartado de clasificación por rectas inicializando el algoritmo con el vector cero y con vectores de números aleatorios en $[0,1]$ (10 veces).
+Anotar el número medio de iteraciones necesarias para converger. Valorar el resultado.
+\end{exercise}
+\textbf{Solucion:}
+Vamos a hacer en primer lugar una función que haga analisis del número de iteraciones:
+\lstset{escapeinside=¿}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> analisis_PLA <- function(datos, label, num_pruebas){
+    
+   
+    iteraciones <- c();
+    N <- nrow(datos);
+    dim <- ncol(datos)-1;
+    max_iter <- 20000
+    
+    for(its in 1:num_pruebas){
+        if(its == 1){
+            w <- c(0,0,0)
+        }
+        else{
+            w <- runif(n = 3, min = 0, max = 1);
+        }
+        salir = FALSE;
+        for(h in 1:max_iter){
+            salir <- TRUE;
+            for(i in 1:N){
+                x <- c(datos[i,1:dim],1);
+                if( sign(w %*% x) != label[i]){
+                    w <- w + label[i]*x
+                    salir <- FALSE;
+                }
+            }
+            if(salir == TRUE){
+                iteraciones[its] <- h;
+                print(iteraciones[its])
+                break
+            }
+        }
+    }
+    print(c("Media",mean(iteraciones)));
+    coefs <- c(-w[1]/w[2], -w[3]/w[2])
+    return(iteraciones)
+}
+\end{lstlisting}
+Ponemos un tope de 2000 iteraciones como máximo, aunque en la práctica este limite no se va a tocar.\\
+La función ejecuta el PLA con distintos valores iniciales de w, veamos lo que ocurre con 10 pruebas (lo que nos pide el enunciado):
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> iters <- analisis_PLA(misDatos, misEtiquetas, 10)
+[1] 46
+[1] 62
+[1] 139
+[1] 118
+[1] 46
+[1] 103
+[1] 117
+[1] 117
+[1] 127
+[1] 50
+[1] "Media" "92.5" 
+\end{lstlisting}
+Vamos ahora a probar con 2000 pruebas, ya que 10 dan poca información sobre lo que ocurre en media.
+Veamos además de la media otros datos como la dispersión mediante un histograma y una gráfica.
+
+\includegraphics[scale=0.7]{Pictures/itersPercep50.png}
+
+Vemos que la distribución tiene puntos de acumulación. Para verlo mejor vamos a hacerlo con 10.000 pruebas:
+
+\includegraphics[scale=0.5]{Pictures/perceptron10000.png}
+
+Veamos ahora una nube de puntos donde cada punto es una prueba y su altura indica el número de iteraciones que se han necesitado:\\
+Para resaltar las franjas vacías vamos a resaltar con colores:
+
+\includegraphics[scale=0.6]{Pictures/perceptronNube10000.png}
+
+La media de iteraciones es $\bar{x} = 93.8279$ para 10.000 experimentos, pero como vemos, en este caso la media no es nada significativa, pues las zonas que más probabilidad concentra es: $[20,80] \cup [100, 160]$.\\
+La mediana, en este caso es una medida más significativa en este caso (la mediana es 65).\\
+
+Probando con otros ejemplos vemos que tambien muestran bandas, en el siguiente caso se muestra la velocidad de convergencia del PLA para 100 puntos uniformemente distribuidos en el rectangulo 
+$[-50, 50]\times[-50,50]$ clasificados mediante la recta $ y=x $\\
+Vemos que tambien aparecen tímidamente algunos casos en los que el perceptrón necesita 4 iteraciones para converger:
+
+\includegraphics[scale=0.45]{Pictures/perceptronHist100pt.png}
+\includegraphics[scale=0.45]{Pictures/perceptron100puntos.png}
+
+\textbf{¿Por qué ocurre esto?} Parece que hay una especie de \textit{valores propios} asociados a cada recta clasificadora. Ya que si probamos con 100 datos en el mismo rectangulo pero esta vez clasificados mediante la recta $y = 0.3x + 5$\\
+
+\includegraphics[scale=0.45]{Pictures/perceptron3hist.png}
+\includegraphics[scale=0.45]{Pictures/percptron3puntos.png}
+
+
+\pagebreak
+Ahora vamos a analizar como funciona el perceptrón cuando los datos \textbf{no son linealmente separables}.\\
+Para ello vamos a usar la muestra de puntos alterados que obtuvimos en la seccion \textit{Alteración de muestras}.\\
+Además vamos a modificar el código del algoritmo PLA para que nos permita dibujar lo que se ha ajustado:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+ajusta_PLA <- function(datos, label, max_iter, v_ini, dibujar = FALSE){
+    w <- v_ini;
+    w[ncol(datos)]=0;
+    N <- nrow(datos);
+    dim <- ncol(datos)-1;
+    salir = FALSE;
+    for(h in 1:max_iter){
+        salir <- TRUE;
+        for(i in 1:N){
+            x <- c(datos[i,1:dim],1);
+            if( sign(w %*% x) != label[i]){
+                w <- w + label[i]*x
+                salir <- FALSE;
+            }
+        }
+        if(salir == TRUE){
+            break
+        }
+    }
+    coefs <- c(coef1 = -w[1]/w[2], coef2 = -w[3]/w[2])
+
+    if (dibujar == TRUE){
+        #Limites de los ejes para el plot:
+        miny = min(datos[,2]);
+        maxy = max(datos[,2]);
+        minx = min(datos[,1]);
+        maxx = max(datos[,1]);
+        plot(x = datos[,1], y= datos[,2], col = label+3, xlim = c(minx, maxx), ylim = c(miny, maxy), main = c("Perceptron", h, "iteraciones"), xlab = "coord X", ylab = "coord Y" )
+        curve(coefs[1]*x + coefs[2], add = TRUE)
+    }
+    return(coefs)
+}
+\end{lstlisting}
+\pagebreak
+\begin{exercise}
+Ejecuta el algoritmo PLA con los datos generados en la seccion de \textit{Alteración de muestras} 
+usando valores de 10, 100 y 1000 para \textit{max\_iter}. Etiquetar los datos de la muestra usando la función solución encontrada y contar el número de errores respecto de las etiquetas originales. Valorar el resultado.
+\end{exercise}
+\textbf{Solución:}\\
+
+Vamos a crear una función que se base en \textit{ajusta\_PLA} y calcule el número de errores que se cometen al clasificar puntos (no necesariamente linealmente separables).\\
+Para simplificar las cosas vamos a usar las funciones auxiliares que hemos ido creando a lo largo de todo el capítulo:\\
+
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+ajusta_PLA_puntos <- function(puntosClasificados, max_iter){
+    datos <- puntosClasificadosToMatrix(puntosClasificados)
+    etiquetas <- datos[,3]
+    coefs <- ajusta_PLA(datos, etiquetas, max_iter, c(0,0,0), dibujar = T)
+    #cuenta errores
+    etiquetaPLA <- 2*(puntosClasificados[[2]] - coefs[1]*puntosClasificados[[1]] - coefs[2] > 0) - 1;
+    num_errores <- length(etiquetaPLA[etiquetaPLA!=etiquetas]);
+    return(c(coeficientes=coefs, Errores=num_errores))
+}
+\end{lstlisting}
+Los resultados que obtenemos son los siguientes:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> ajusta_PLA_puntos(misOtrosPuntosClasificadosAlter, 10)
+     coef1            coef2                        Errores 
+     -1.161950      -4.724129                        12
+> ajusta_PLA_puntos(misOtrosPuntosClasificadosAlter, 100)
+     coef1            coef2                        Errores 
+     -0.5392779     -15.8210893                       4
+> ajusta_PLA_puntos(misOtrosPuntosClasificadosAlter, 1000)
+     coef1            coef2                        Errores 
+     -0.3022515     -21.5970765  					 1
+> ajusta_PLA_puntos(misOtrosPuntosClasificadosAlter, 10000)
+     coef1            coef2                        Errores 
+     -0.4685635     -23.2239785                       4     
+\end{lstlisting}
+Y obtenemos estos hiperplanos:\\
+\includegraphics[scale=0.5]{Pictures/alter10.png}
+\includegraphics[scale=0.5]{Pictures/alter100.png}\\
+\includegraphics[scale=0.5]{Pictures/alter1000.png}
+\includegraphics[scale=0.5]{Pictures/alter10000.png}
+
+Como vemos, el número de errores no siempre se reduce al aumentar el número de iteraciones, pero si parece razonable pensar que cuando hay pocos puntos conflictivos el perceptrón va a comportarse bien.\\
+Veamos lo que ocurre en 300 experimentos:\\
+\begin{multicols}{2} 
+\includegraphics[scale=0.5]{Pictures/iter300exp.png}
+
+\;
+
+\;
+
+\;
+
+\begin{center}
+\includegraphics[scale=0.3]{Pictures/tabla1.png}
+\end{center}
+\end{multicols} 
+
+\begin{exercise}
+Repetir el análisis del ejercicio anterior usando puntos clasificados mediante puntos
+\end{exercise}
+\textbf{Solución:}
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> misOtrosPuntosClasificadosCirc <- clasificaPuntosFuncion1v2(misOtrosPuntos)
+> numero_errores_PLA(misOtrosPuntosClasificadosCirc, 10)
+[1] 34
+> numero_errores_PLA(misOtrosPuntosClasificadosCirc, 100)
+[1] 38
+> numero_errores_PLA(misOtrosPuntosClasificadosCirc, 1000)
+[1] 38
+> for(i in 1:300){
++     v_err[i] <- numero_errores_PLA(misOtrosPuntosClasificadosCirc, i)
++ }
+> plot(1:300, v_err, col="red", pch = 20,  xlab = "Num Iteraciones", ylab = "Num errores", main = "Numero de errores en funcion de\n las iteraciones del perceptron")
+>   
+\end{lstlisting}
+
+\begin{multicols}{2} 
+\includegraphics[scale=0.5]{Pictures/analisis2.png}
+
+\;
+
+\;
+
+\;
+
+\begin{center}
+\includegraphics[scale=0.4]{Pictures/tabla2.png}
+\end{center}
+\end{multicols} 
+Como podemos observar el número de errores del perceptron depende fundamentamente de lo \textit{cerca o lejos} que esten los datos de ser linealmente separables. En el caso de los datos linealmente separables obteníamos 0 errores (el perceptrón acababa), en el caso de cambiar unas cuantas etiquetas de un modelo que era linealmente separable el perceptron fallaba poco. En este último caso caso los datos se clasificaban mediante un circulo, como vemos en la siguiente figura, esto hace que el perceptrón se inutil para clasificar en este caso.
+
+\includegraphics[scale=0.5]{Pictures/clasifica_circulos.png}
+
+\begin{exercise}
+Modificar la función \textit{ajusta\_PLA} para que permita visualizar los datos y soluciones que va encontrando a lo largo de las iteraciones y utilizala en un caso práctico.
+\end{exercise}
+
+Vamos a modificarlo para que genere una animación en la que se muestre la evolución del perceptrón.
+Para ello necesitamos el paquete \textit{animation}.\\
+Con RStudio podemos instalar el paquete y luego activarlo (marcando la casilla correspondiente en la pestaña \textit{Packages} de la ventana derecha).
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> install.packages("animation")
+> library("animation", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library") 
+\end{lstlisting}
+Tambien vamos a necesitar el programa \textbf{ImageMagick:}\\
+Puede descargarse en \url{http://www.imagemagick.org/script/binary-releases.php}\\
+Una vez instalado podremos usar la orden \textit{im.convert} en R, que es la que va a crear el archivo -gif con la animación 
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> ajusta_PLA <- function(datos, label, max_iter, v_ini, dibujar = FALSE, animation = FALSE){
+    w <- v_ini;
+    
+    #Limites de los ejes para el plot:
+    miny = min(datos[,2]);
+    maxy = max(datos[,2]);
+    minx = min(datos[,1]);
+    maxx = max(datos[,1]);
+    
+    #Plot inicial
+    plot(x = datos[,1], y= datos[,2], col = label+3, xlim = c(minx, maxx), ylim = c(miny, maxy), main = c("Perceptron", h, "iteraciones"), xlab = "coord X", ylab = "coord Y" )
+    
+    w[ncol(datos)]=0;
+    N <- nrow(datos);
+    dim <- ncol(datos)-1;
+    
+    salir = FALSE;
+    cambio_color_circulo = FALSE; #Variable auxiliar para la animacion
+    for(h in 1:max_iter){
+        salir <- TRUE;
+        for(i in 1:N){
+            cambio_color_circulo <- FALSE
+            x <- c(datos[i,1:dim],1);
+            if( sign(w %*% x) != label[i]){
+                w <- w + label[i]*x
+                salir <- FALSE;
+                cambio_color_circulo <- TRUE
+            }
+            if(animation == TRUE){
+                    coefs <- c(coef1 = -w[1]/w[2], coef2 = -w[3]/w[2])
+                    frame = 10000000 + (h-1)*N + i; #El 10000000 es para que la visualizacion se haga en orden
+                    filename <- paste("perceptron", frame, ".png", sep="")
+                    png(file=filename, width=550, height=550)
+                    plot(x = datos[,1], y= datos[,2], col = label+3, xlim = c(minx, maxx), ylim = c(miny, maxy), main = paste("Perceptron iteracion: ", frame - 10000000,"\nRonda ", h,  sep=""), xlab = "coord X", ylab = "coord Y" )
+                    if(cambio_color_circulo){
+                         color_circulo <- "indianred2"
+                    }
+                    else{
+                        color_circulo <- "steelblue2"
+                    }
+                   
+                    symbols(x = datos[i,1], y = datos[i,2], circles=5, inches=1/3, add=T, ann=F, bg=color_circulo, fg=NULL)
+                    points(x = datos[i,1], y = datos[i,2], col = datos[i,3]+3, add=T)
+                    curve(coefs[1]*x + coefs[2], add = TRUE)
+                    dev.off()
+                }
+        }
+
+        
+        if(salir == TRUE){
+            break;
+        }
+    }
+    
+    coefs <- c(coef1 = -w[1]/w[2], coef2 = -w[3]/w[2])
+    
+    if (dibujar == TRUE){
+        plot(x = datos[,1], y= datos[,2], col = label+3, xlim = c(minx, maxx), ylim = c(miny, maxy), main = c("Perceptron", h, "iteraciones"), xlab = "coord X", ylab = "coord Y" )
+        curve(coefs[1]*x + coefs[2], add = TRUE)
+    }
+    
+    if (animation == TRUE){
+        im.convert("perceptron*.png", output = "perceptron.gif")
+    }
+    
+    return(coefs)
+}
+\end{lstlisting}
+
+Para que veamos un ejemplo:
+
+
+\includemovie{10cm}{10cm}{Pictures/perceptron.gif}
+%\caption{Animacion Percpetron}
+
+\subsection{Versión mejorada del PLA: \textit{PLA - Pocket}}
+
+\begin{exercise}
+A la vista de la conducta de las soluciones observada en el apartado anterior, proponga e implemente una modificación de la función original \textit{sol = ajusta\_PLA\_MOD(...)} que permita obtener soluciones razonables sobre datos no linealmente separables. Mostrar y valorar el resultado encontrado usando datos no linealmente separables (los que utilizamos en el modelo circular).
+\end{exercise}
+
+El problema era que el número de errores que se cometen no decrecía al aumentar el número de iteraciones.
+Por eso la solución más natural es tener una variable que recuerde los pesos asociados a la mejor solución y devolver esos pesos en lugar de los últimos pesos calculados.\\
+La implementación es la siguiente:\\
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> ajusta_PLA_pocket <- function(datos, label, max_iter, v_ini, dibujar = FALSE, animation = FALSE){
+    w <- v_ini;
+    
+    #Limites de los ejes para el plot:
+    miny = min(datos[,2]);
+    maxy = max(datos[,2]);
+    minx = min(datos[,1]);
+    maxx = max(datos[,1]);
+    
+    #Plot inicial
+    plot(x = datos[,1], y= datos[,2], col = label+3, xlim = c(minx, maxx), ylim = c(miny, maxy), main = c("Perceptron", h, "iteraciones"), xlab = "coord X", ylab = "coord Y" )
+    
+    w[ncol(datos)]=0;
+    N <- nrow(datos);
+    dim <- ncol(datos)-1;
+    min_num_errores <- N;
+    
+    salir = FALSE;
+    cambio_color_circulo = FALSE; #Variable auxiliar para la animacion
+    for(h in 1:max_iter){
+        salir <- TRUE;
+        recorrido <- sample(1:N, N, replace = F)
+        for(i in recorrido){
+            cambio_color_circulo <- FALSE
+            x <- c(datos[i,1:dim],1);
+            if( sign(w %*% x) != label[i]){
+                w <- w + label[i]*x
+                salir <- FALSE;
+                cambio_color_circulo <- TRUE
+            }
+            if(animation == TRUE){
+                coefs <- c(coef1 = -w[1]/w[2], coef2 = -w[3]/w[2])
+                frame = 10000000 + (h-1)*N + i; #El 10000000 es para que la visualizacion se haga en orden
+                filename <- paste("perceptron", frame, ".png", sep="")
+                png(file=filename, width=550, height=550)
+                plot(x = datos[,1], y= datos[,2], col = label+3, xlim = c(minx, maxx), ylim = c(miny, maxy), main = paste("Perceptron iteracion: ", frame - 10000000,"\nRonda ", h,  sep=""), xlab = "coord X", ylab = "coord Y" )
+                if(cambio_color_circulo){
+                    color_circulo <- "indianred2"
+                }
+                else{
+                    color_circulo <- "steelblue2"
+                }
+                
+                symbols(x = datos[i,1], y = datos[i,2], circles=5, inches=1/3, add=T, ann=F, bg=color_circulo, fg=NULL)
+                points(x = datos[i,1], y = datos[i,2], col = datos[i,3]+3, add=T)
+                curve(coefs[1]*x + coefs[2], add = TRUE)
+                dev.off()
+            }
+        }
+        
+        coefs <- c(coef1 = -w[1]/w[2], coef2 = -w[3]/w[2])
+        
+        #cuenta errores
+        etiquetaPLA <- 2*(datos[,2] - coefs[1]*datos[,1] - coefs[2] > 0) - 1;
+        num_errores_actual <- length(etiquetaPLA[etiquetaPLA!=label]);
+        
+        if(num_errores_actual < min_num_errores){
+            min_num_errores <- num_errores_actual;
+            mejores_coefs <- coefs;
+        }
+        if(salir == TRUE){
+            break;
+        }
+    }
+    
+    if (dibujar == TRUE){
+        plot(x = datos[,1], y= datos[,2], col = label+3, xlim = c(minx, maxx), ylim = c(miny, maxy), main = c("Perceptron", h, "iteraciones"), xlab = "coord X", ylab = "coord Y" )
+        curve(coefs[1]*x + coefs[2], add = TRUE)
+    }
+    
+    if (animation == TRUE){
+        im.convert("perceptron*.png", output = "perceptron.gif")
+    }
+    
+    return(mejores_coefs)
+}
+\end{lstlisting}
+
+Para facilitar el uso del algoritmo vamos a hacer una nueva interfaz para hacer el PLA directamente desde puntos clasificados.
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+ajusta_PLA_puntos_pocket <- function(puntosClasificados, max_iter){
+    datos <- puntosClasificadosToMatrix(puntosClasificados)
+    etiquetas <- datos[,3]
+    coefs <- ajusta_PLA_pocket(datos, etiquetas, max_iter, c(0,0,0), dibujar = T)
+    #cuenta errores
+    etiquetaPLA <- 2*(puntosClasificados[[2]] - coefs[1]*puntosClasificados[[1]] - coefs[2] > 0) - 1;
+    num_errores <- length(etiquetaPLA[etiquetaPLA!=etiquetas]);
+    return(c(coeficientes=coefs, Errores=num_errores))
+    
+}
+\end{lstlisting}
+
+Podemos ver la diferencia entre los dos algoritmos ejecutando para el mismo conjunto de datos y el mismo número de iteraciones los dos algoritmos y comparar el número de puntos mal clasificados:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> ajusta_PLA_puntos_pocket(misOtrosPuntosClasificadosCirc,100)
+	coef1 				coef2                        Errores 
+	-0.7990891           -72.5481299                    11
+> ajusta_PLA_puntos(misOtrosPuntosClasificadosCirc,100)
+	coef1	 			  coef2                        Errores 
+	-0.1221047            12.2697756                     38
+\end{lstlisting}
+Como podemos ver el número de errores del pocket es mucho menor, en las gráficas podemos ver como son esas soluciones:
+	
+\includegraphics[scale=0.55]{Pictures/perceptron100.png}
+\includegraphics[scale=0.55]{Pictures/pocket100.png}
+
+\pagebreak
+Tambien podemos ver como el número de iteraciones en el pocket decrece cuando aumentamos el \textit{max\_iter}, cosa que no ocurría con la version más sencilla:
+Para el mismo conjunto de datos tenemos:\\
+\includegraphics[scale=0.8]{Pictures/EstandarVsPocket.png}
+
+\pagebreak
+
+\section{Regresión Lineal}
+A lo largo de esta sección vamos a trabajar con el dataset "\textit{Handwritten Digits (MNIST)}", uno de los más famosos junto con el de las flores "\textit{iris}".\\
+En este caso vamos a trabajar únicamente con los "cincos" y los "unos" para hacer la tarea mucho más sencilla.\\
+Para importar el dataset vamos al menú de arriba de RStudio: \textbf{Tools < Import Dataset < From Local File.}\\
+Y seleccionamos \textit{zip.train}:
+
+\includegraphics[scale=0.7]{importDigits.png}
+Este proceso creará un data.frame llamado zip con muestras de todos los digitos
+Una vez tengamos el data.frame vamos a quedarnos solo con los 1 y los 5:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+> indicesUnosYCincos <- which(zip$V1 == 1 | zip$V1 == 5)
+> misNumeros <- zip[indicesUnosYCincos,]
+\end{lstlisting}
+Ahora vamos a guardarla en formato de matrices de números 16x16\\
+Para ello vamos a crear una funcion auxiliar que se encargue de pasar los datos a un formato más comodo para R:
+\pagebreak
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]
+importarNumeros <- function(data, dibujar = FALSE){
+    num_datos <- length(data$V1)
+    listaDigitos <- list();
+    for(i in 1:num_datos){
+        miMatriz_actual <- misNumeros[i,]
+        listaDigitos[[i]] <- matrix(as.numeric(miMatriz_actual[2:257]),nrow = 16,ncol = 16)
+        if(dibujar == TRUE){
+            image(z = listaDigitos[[i]], col = rev(grey.colors(start = 0.1, n = 10, end = 0.95)))
+        }
+    }
+    return(listaDigitos)
+}
+#Ejecutamos la funcion y nos quedamos con la lista de numeros:
+> miListaNumeros <- importarNumeros(misNumeros)
+\end{lstlisting}
+Al ejecutar la función tendremos una lista de matrices, donde cada matriz es de 16x16 y tiene valores numericos en el intervalo $[-1,1]$ donde -1 es blanco y 1 es negro (aunque el color realmente se puede interpretar de muchas formas, en mi caso \textit{col = rev(grey.colors(start = 0.1, n = 10, end = 0.95))} indica -1 es un gris casi blanco y 1 es un gris muy oscuro casi negro.\\
+Tal y como vemos en las imagenes siguientes:
+
+\includegraphics[scale=0.45]{Pictures/regresionEj51.png}
+\includegraphics[scale=0.45]{Pictures/regresionEj11.png}
+\includegraphics[scale=0.45]{Pictures/regresionEj52.png}
+Es importante observar que los cincos están girados y parecen doses.
+
+Ahora vamos a crear una función que muestre como de simétrico es un número respecto de un eje vertical:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]  
+> calcularGradoSimetria <- function(matriz){
+    #Calcula el grado de simetria vertical
+    matrizSimetrica <- calcularMatrizSimetricaVertical(matriz)
+    gradoSimetria <- sum(abs(matriz - matriz[,16:1]))
+    return(gradoSimetria)
+}   
+    
+\end{lstlisting}
+Los números con un grado de simetria alto serán cincos (ya que son muy asimetricos) y aquellos que tengan un grado de asimetria menor serán unos.\\
+La otra función que vamos a utilizar para clasificar va a ser el \textit{valor medio} entendiendolo como la media de todos los valores de la matriz:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+> gradoIntensidadMedia <- function(matriz){
+    return(mean(matriz))
+}   
+
+\end{lstlisting}
+
+\begin{exercise}
+Representar en los ejes { X = Intensidad Promedio, Y = Simetría } las instancias seleccionadas de 1's y 5's.
+\end{exercise}
+En primer lugar vamos a crear dos vectores en los que vamos a colocar en la componente i-esima el valor del grado de simetría y el grado de intensidad del digito i-esimo de nuestro dataset de 1's y 5's.
+
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+> gradosSimetria <- c()
+> for(i in 1:length(miListaNumeros)){
+     gradosSimetria[i] <- calcularGradoSimetria(miListaNumeros[[i]])
+ }
+> gradosIntensidad <- c()
+> for(i in 1:length(miListaNumeros)){
+     gradosIntensidad[i] <- gradoIntensidadMedia(miListaNumeros[[i]])
+ } 
+#Podemos ver como quedan el grafico si aniadimos un color a cada punto en funcion de su etiqueta:
+> plot(x=gradosIntensidad, y=gradosSimetria,col=(miVectorEtiquetas-1)/2 + 2, xlab="Intensidad Promedio", ylab="Grado Simetria")
+\end{lstlisting}
+
+\includegraphics[scale=0.5]{Pictures/15clasificados.png}
+
+\subsection{Conceptos de Algebra Lineal - SVD}
+Para hacer un clasificiador lineal hay que calcular la inversa de una matriz que en general será bastante grande, por eso un metodo como el de Cramer va a ser muy ineficiente.\\
+En su lugar vamos a utilizar la descomposición en valores singulares de una matriz y despues calcular la inversa aprovechando dicha descomposición.\\
+Dada una matriz:
+$$ M = X X^t$$ 
+Se puede ver que $M$ es simetrica y definida positiva:\\
+Una matriz simetrica y definida positiva puede descomponerse como:
+$$M = USV^t$$
+Donde:
+\begin{itemize}
+ \item {U es una matriz cuyas columnas son los vectores propios de $MM^t$}
+ \item {S es una matriz diagonal cuyos elementos son los valores singulares de $M$}
+ \item {V es una matriz cuyas columnas son los vectores propios de $M^tM$}
+\end{itemize}
+Por tanto la inversa queda así:
+$$ M^{-1} = (USV^t)^{-1} = (V^t)^{-1}S^{-1}U^{-1} = VD^{-1}U^t$$
+Con lo que tan solo debemos invertir una matriz diagonal.	\\
+Para ello vamos a implementar la siguiente función en R:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+> invertirMatrizSVD <- function(matriz){
+    svdDesc <- svd(matriz)
+    S_inversa_coef <- 1/svdDesc$d
+    S_inversa <- diag(x = S_inversa_coef, nrow = nrow(matriz),ncol = ncol(matriz))
+    V <- matrix(svdDesc$v, nrow = nrow(matriz))
+    U <- matrix(svdDesc$u, nrow = nrow(matriz))
+    matriz_inversa <- V %*% S_inversa %*% t(U) 
+    return(matriz_inversa)
+}  
+\end{lstlisting}
+
+\subsection{Algoritmo de Regresion lineal}
+
+\begin{exercise}
+Implementar la funcion \textit{regress\_lin(datos, label)} que permita ajustar un modelo de regresion lineal (usar SVD). Los datos de entrada se interpretan igual que en clasificación.
+\end{exercise}
+En primer lugar vamos a crear el vector de etiquetas (\textit{label}): 
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ] 
+#Recordamos que las etiquetas eran 5's y 1's y queremos -1's y 1's:   
+> head(misNumeros$V1)
+[1] 5 1 1 1 1 1
+> miVectorEtiquetas <- misNumeros$V1 
+> miVectorEtiquetas <- (miVectorEtiquetas-3)/2 
+> head(miVectorEtiquetas)
+[1]  1 -1 -1 -1 -1 -1
+\end{lstlisting}
+Ahora que ya tenemos \textit{miVectorEtiquetas} vamos a preparar los datos:\\
+Recordamos que la estructura que queremos es $(1 \textbar  x_1 \textbar x_2)$ donde $x_1$ es el grado de intensidad media de cada dígito y $x_2$ es el grado de simetría vertical:
+ \begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ] 
+> datos <- matrix(c(rep(1, length(gradosIntensidad)), gradosIntensidad, gradosSimetria), ncol=3 )
+> head(datos)
+     [,1]       [,2]    [,3]
+[1,]    1 -0.1117383 215.162
+[2,]    1 -0.7539141  15.240
+[3,]    1 -0.7722813  18.060
+[4,]    1 -0.7692578   9.472
+[5,]    1 -0.7954375  11.212
+[6,]    1 -0.7159141  27.492
+> 
+\end{lstlisting}
+Ahora vamos a implementar la funcion \textit{regress\_lin} que es la que se va a encargar de darnos los coeficientes de la recta que separa nuestra nube de puntos de 1's y 5's:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+> regress_lin <- function(datos, label){
+    X <- datos; #datos es una matriz [N x 3] ---->>> (1, x0, x1)
+    H <- (invertirMatrizSVD(t(X) %*% X) %*% t(X))
+    w <- H %*% t(matrix(label, nrow = 1))
+    
+	# hiperplano: w1 + w2*x + w3*y = 0  ==>
+    coefs <- c(-w[2]/w[3], -w[1]/w[3])
+    return(coefs)
+}
+\end{lstlisting}
+Utilizamos la función que acabamos de implementar y obtenemos unos coeficientes
+que colocamos en la recta y vemos que la nube se queda bien separada:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+> regress_lin(datos, miVectorEtiquetas)
+[1]  52.19644 122.25713
+> plot(x=gradosIntensidad, y=gradosSimetria,col=miVectorEtiquetas +3, xlab="Intensidad Promedio", ylab="Grado Simetria")
+> curve(52.19644*x + 122.25713, add = T)
+\end{lstlisting}
+\includegraphics[scale=0.7]{Pictures/regres_lin.png}
+
+\begin{exercise}
+En este ejercicio exploramos como funciona regresión lineal en problemas de clasificación. Para ello generamos datos usando el mismo procedimiento que en los ejercicios anteriores. Suponemos $X = [-10,10] \times [-10, 10]$ y elegimos muestras aleatorias uniformes dentro de $X$. La función $f$ en cada caso será una recta aleatoria que corta a $X$ y que asigna etiqueta a cada punto con el valor de su signo. En cada apartado generamos una muestra y le asignamos etiqueta con la función $f$ generada. En cada ejecución generamos una nueva función $f$.
+\begin{itemize}
+	\item{Fijar el tamaño de muestra $N = 100$. Usar regresión lineal para encontrar $g$ y evaluar $E_{in}$ (el porcentaje de puntos mal clasificados). Repetir el experimento $1000$ veces y promediar los resultados. ¿Qué valor obtiene para $E_{in}$?}
+	\item{Fijar el tamaño de muestra $N = 100$. Usar regresión lineal para encontrar $g$ y evaluar $E_{out}$. Para ello generar $1000$ puntos nuevos y usaros para estimar el error fuera de la muestra, $E_{out}$ (el porcentaje de puntos mal clasificados).De nuevo, ejecutar el experimento $1000$ veces y tomar el promedio. ¿Qué valor obtiene para $E_{out}$? Valore los resultados}.
+\end{itemize}
+
+\end{exercise}
+
+En primer lugar vamos a hacer una única prueba:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+> misPuntos <- simula_unif(N = 100, dim = 2, min = -10, max = 10)
+> misPuntosClasificados <- clasificaPuntosRectav2(misPuntos, rectaF[1], rectaF[2])
+> matrizDatos <- puntosClasificadosToMatrix(misPuntosClasificados)
+> datos <- matrix( c(rep(1, length(matrizDatos[,1])),matrizDatos[,1], matrizDatos[,2]), ncol=3)
+> etiquetas <- matrizDatos[,3]
+> recta_regresion <- regress_lin(datos, etiquetas)
+> curve(recta_regresion[1]*x + recta_regresion[2], add = T, col="blue", lwd=3, lty= 5)
+\end{lstlisting}
+
+Creamos una función para ver el número de puntos que quedan mal clasificados que se utilizará para ver el error relativo:
+
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+> numero_errores_regress <- function(puntosClasificados, recta){
+    etiquetasReales <- puntosClasificadosToMatrix(puntosClasificados)[,3]
+    etiquetaRegresion <- 2*(puntosClasificados[[2]] - recta[1]*puntosClasificados[[1]] - recta[2] > 0) - 1;
+    num_errores <- length(etiquetaRegresion[etiquetaRegresion!=etiquetasReales]);
+    return(num_errores)
+}
+    
+> errorRelativo <- function(puntosClasificados, recta){
+    num_errores <- numero_errores_regress(puntosClasificados, recta)
+    errorRelativo <- num_errores / length(puntosClasificados[[1]])
+    return(errorRelativo)
+}
+
+\end{lstlisting}
+Hacemos una prueba y vemos que el error fuera de esa muestra es 2'8%
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ] 
+> errorRelativo(misPuntosClasificados, recta_regresion)
+[1] 0.03
+#Veamos lo que pasa fuera de la muestra:
+> misPuntosFuera <- simula_unif(1000, 2, -10, 10)
+> misPuntosFueraClasificados <- clasificaPuntosRectav2(misPuntosFuera, rectaF[1], rectaF[2])
+> errorRelativo(misPuntosFueraClasificados, recta_regresion)
+[1] 0.028
+\end{lstlisting}
+
+Vamos a ver como se comporta la regresión dentro de la muestra haciendo 1000 experimentos:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+# E_in:
+> v_errores <- c()
+> for(i in 1:1000){
+    misPuntos <- simula_unif(100, 2, -10, 10)
+    recta <- simula_recta(-10, 10)
+    misPuntosClasificados <- clasificaPuntosRectav2(misPuntos, recta[1], recta[2])
+    matrizDatos <- puntosClasificadosToMatrix(misPuntosClasificados)
+    datos <- matrix(c(rep(1,length(matrizDatos[,1])),matrizDatos[,1], matrizDatos[,2]),ncol=3)
+    etiquetas <- matrizDatos[,3]
+    recta_regresion <- regress_lin(datos, etiquetas)
+    v_errores[i] <- errorRelativo(misPuntosClasificados, recta_regresion)
+}
+
+#En media nos equivocamos en el 5'66% de los puntos
+> mean(v_errores)
+[1] 0.05774
+\end{lstlisting}
+
+Ahora vamos a estimar el error fuera de la muestra:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+#E_out
+> v_errores_fuera <- c()
+> for(i in 1:1000){
+    misPuntos <- simula_unif(100, 2, -10, 10)
+    misPuntosFuera <- simula_unif(1000, 2, -10, 10)
+    recta <- simula_recta(-10, 10)
+    misPuntosClasificados <- clasificaPuntosRectav2(misPuntos, recta[1], recta[2])
+    misPuntosClasificadosFuera <- clasificaPuntosRectav2(misPuntosFuera, recta[1], recta[2])
+    matrizDatos <- puntosClasificadosToMatrix(misPuntosClasificados)
+    datos <- matrix(c(rep(1,length(matrizDatos[,1])),matrizDatos[,1], matrizDatos[,2]),ncol=3)
+    etiquetas <- matrizDatos[,3]
+    recta_regresion <- regress_lin(datos, etiquetas)
+    
+    v_errores_fuera[i] <- errorRelativo(misPuntosClasificadosFuera, recta_regresion)
+}
+> mean(v_errores_fuera)
+[1] 0.075112
+\end{lstlisting}
+
+\subsection{Regresion y PLA}
+
+Los pesos que se obtienen a partir del algoritmo de regresión pueden usarse como pesos iniciales para el PLA ya que son unos pesos que ya de por sí aproximan la recta objetivo del PLA.\\
+El algorimo de Regresión es computacionalmente muy eficiente y puede hacer que el PLA converja más rápido.
+
+No voy a programarlo ya que la estructura de matrices de datos que he usado para el PLA es diferente del que he usado en el modelo de regresión.\\
+
+Para ajustar los pesos habría que hacer una función como esta:
+\begin{lstlisting}[
+           language=R,
+           breaklines=true,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           commentstyle=\color{gray}
+        ]    
+> pesos_PLA_regress_lin <- function(datos, label){
+    X <- datos; #datos es una matriz [N x 3] ---->>> (1, x0, x1)
+    H <- (invertirMatrizSVD(t(X) %*% X) %*% t(X))
+    w <- H %*% t(matrix(label, nrow = 1))
+    #Devolvemos el vector de pesos "girado" porque en el PLA datos es (x0, x1, 1)
+    w_PLA <- c()
+    w_PLA[1] <- w[2]
+    w_PLA[2] <- w[3]
+    w_PLA[3] <- w[1]
+    return(w_PLA)
+}
+\end{lstlisting}
+
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 3
+%%----------------------------------------------------------------------------------------
+\begin{comment}
+\chapter{In-text Elements}
+
+\section{Theorems}\index{Theorems}
+
+This is an example of theorems.
+
+\subsection{Several equations}\index{Theorems!Several Equations}
+This is a theorem consisting of several equations.
+
+\begin{theorem}[Name of the theorem]
+In $E=\mathbb{R}^n$ all norms are equivalent. It has the properties:
+\begin{align}
+& \big| ||\mathbf{x}|| - ||\mathbf{y}|| \big|\leq || \mathbf{x}- \mathbf{y}||\\
+&  ||\sum_{i=1}^n\mathbf{x}_i||\leq \sum_{i=1}^n||\mathbf{x}_i||\quad\text{where $n$ is a finite integer}
+\end{align}
+\end{theorem}
+
+\subsection{Single Line}\index{Theorems!Single Line}
+This is a theorem consisting of just one line.
+
+\begin{theorem}
+A set $\mathcal{D}(G)$ in dense in $L^2(G)$, $|\cdot|_0$. 
+\end{theorem}
+
+%------------------------------------------------
+
+\section{Definitions}\index{Definitions}
+
+This is an example of a definition. A definition could be mathematical or it could define a concept.
+
+\begin{definition}[Definition name]
+Given a vector space $E$, a norm on $E$ is an application, denoted $||\cdot||$, $E$ in $\mathbb{R}^+=[0,+\infty[$ such that:
+\begin{align}
+& ||\mathbf{x}||=0\ \Rightarrow\ \mathbf{x}=\mathbf{0}\\
+& ||\lambda \mathbf{x}||=|\lambda|\cdot ||\mathbf{x}||\\
+& ||\mathbf{x}+\mathbf{y}||\leq ||\mathbf{x}||+||\mathbf{y}||
+\end{align}
+\end{definition}
+
+%------------------------------------------------
+
+\section{Notations}\index{Notations}
+
+\begin{notation}
+Given an open subset $G$ of $\mathbb{R}^n$, the set of functions $\varphi$ are:
+\begin{enumerate}
+\item Bounded support $G$;
+\item Infinitely differentiable;
+\end{enumerate}
+a vector space is denoted by $\mathcal{D}(G)$. 
+\end{notation}
+
+%------------------------------------------------
+
+\section{Remarks}\index{Remarks}
+
+This is an example of a remark.
+
+\begin{remark}
+The concepts presented here are now in conventional employment in mathematics. Vector spaces are taken over the field $\mathbb{K}=\mathbb{R}$, however, established properties are easily extended to $\mathbb{K}=\mathbb{C}$.
+\end{remark}
+
+%------------------------------------------------
+
+\section{Corollaries}\index{Corollaries}
+
+This is an example of a corollary.
+
+\begin{corollary}[Corollary name]
+The concepts presented here are now in conventional employment in mathematics. Vector spaces are taken over the field $\mathbb{K}=\mathbb{R}$, however, established properties are easily extended to $\mathbb{K}=\mathbb{C}$.
+\end{corollary}
+
+%------------------------------------------------
+
+\section{Propositions}\index{Propositions}
+
+This is an example of propositions.
+
+\subsection{Several equations}\index{Propositions!Several Equations}
+
+\begin{proposition}[Proposition name]
+It has the properties:
+\begin{align}
+& \big| ||\mathbf{x}|| - ||\mathbf{y}|| \big|\leq || \mathbf{x}- \mathbf{y}||\\
+&  ||\sum_{i=1}^n\mathbf{x}_i||\leq \sum_{i=1}^n||\mathbf{x}_i||\quad\text{where $n$ is a finite integer}
+\end{align}
+\end{proposition}
+
+\subsection{Single Line}\index{Propositions!Single Line}
+
+\begin{proposition} 
+Let $f,g\in L^2(G)$; if $\forall \varphi\in\mathcal{D}(G)$, $(f,\varphi)_0=(g,\varphi)_0$ then $f = g$. 
+\end{proposition}
+
+%------------------------------------------------
+
+\section{Examples}\index{Examples}
+
+This is an example of examples.
+
+\subsection{Equation and Text}\index{Examples!Equation and Text}
+
+\begin{example}
+Let $G=\{x\in\mathbb{R}^2:|x|<3\}$ and denoted by: $x^0=(1,1)$; consider the function:
+\begin{equation}
+f(x)=\left\{\begin{aligned} & \mathrm{e}^{|x|} & & \text{si $|x-x^0|\leq 1/2$}\\
+& 0 & & \text{si $|x-x^0|> 1/2$}\end{aligned}\right.
+\end{equation}
+The function $f$ has bounded support, we can take $A=\{x\in\mathbb{R}^2:|x-x^0|\leq 1/2+\epsilon\}$ for all $\epsilon\in\intoo{0}{5/2-\sqrt{2}}$.
+\end{example}
+
+\subsection{Paragraph of Text}\index{Examples!Paragraph of Text}
+
+\begin{example}[Example name]
+\lipsum[2]
+\end{example}
+
+%------------------------------------------------
+
+\section{Exercises}\index{Exercises}
+
+This is an example of an exercise.
+
+\begin{exercise}
+This is a good place to ask a question to test learning progress or further cement ideas into students' minds.
+\end{exercise}
+
+%------------------------------------------------
+
+\section{Problems}\index{Problems}
+
+\begin{problem}
+What is the average airspeed velocity of an unladen swallow?
+\end{problem}
+
+%------------------------------------------------
+
+\section{Vocabulary}\index{Vocabulary}
+
+Define a word to improve a students' vocabulary.
+
+\begin{vocabulary}[Word]
+Definition of word.
+\end{vocabulary}
+
+%----------------------------------------------------------------------------------------
+%	PART
+%----------------------------------------------------------------------------------------
+
+\part{Part Two}
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 3
+%----------------------------------------------------------------------------------------
+
+\chapterimage{chapter_head_1.pdf} % Chapter heading image
+
+\chapter{Presenting Information}
+
+\section{Table}\index{Table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l l l}
+\toprule
+\textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
+\midrule
+Treatment 1 & 0.0003262 & 0.562 \\
+Treatment 2 & 0.0015681 & 0.910 \\
+Treatment 3 & 0.0009271 & 0.296 \\
+\bottomrule
+\end{tabular}
+\caption{Table caption}
+\end{table}
+
+%------------------------------------------------
+
+\section{Figure}\index{Figure}
+
+\begin{figure}[h]
+\centering\includegraphics[scale=0.5]{placeholder}
+\caption{Figure caption}
+\end{figure}
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+
+\chapter*{Bibliography}
+\addcontentsline{toc}{chapter}{\textcolor{ocre}{Bibliography}}
+\section*{Books}
+\addcontentsline{toc}{section}{Books}
+\printbibliography[heading=bibempty,type=book]
+\section*{Articles}
+\addcontentsline{toc}{section}{Articles}
+\printbibliography[heading=bibempty,type=article]
+
+%----------------------------------------------------------------------------------------
+%	INDEX
+%----------------------------------------------------------------------------------------
+
+\cleardoublepage
+\phantomsection
+\setlength{\columnsep}{0.75cm}
+\addcontentsline{toc}{chapter}{\textcolor{ocre}{Index}}
+\printindex
+
+%----------------------------------------------------------------------------------------
+\end{comment}
+\end{document}

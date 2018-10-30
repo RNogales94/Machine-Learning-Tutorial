@@ -1,0 +1,1153 @@
+---
+title: "Practica 2"
+author: "Rafael Nogales"
+date: "17 de abril de 2016"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+pintar_grafica = function(f) {
+    x=y=seq(-50,50,by=0.1)
+    z = outer(x,y,FUN=f)
+    contour(x,y,z, level=0, drawlabels = FALSE,add = TRUE)  # añade el gráfico
+    contour(x,y,z, level=0.5, drawlabels = FALSE,add = TRUE)  # añade el gráfico
+    contour(x,y,z, level=1, drawlabels = FALSE,add = TRUE)  # añade el gráfico
+    contour(x,y,z, level=2, drawlabels = FALSE,add = TRUE)  # añade el gráfico
+    contour(x,y,z, level=3, drawlabels = FALSE,add = TRUE)  # añade el gráfico
+
+}
+
+pinta_puntos = function(m, rangox = NULL, rangoy = NULL ,etiqueta=NULL){
+    nptos=nrow(m)
+    long = ncol=m
+    
+    if(is.null(rangox) && is.null(rangoy)){
+        rangox = range(m[,1])
+        rangoy = range(m[,1])
+    }
+    else if(is.null(rangoy)) 
+        rangoy = rangox
+    
+    if(is.null(etiqueta)) 
+        etiqueta = 1
+    else etiqueta = etiqueta+2
+    
+    plot(m,xlab=paste("Pinta ",nptos," Puntos"), ylab="", 
+         xlim=rangox, ylim=rangoy,col=etiqueta,pch=19)
+}
+```
+
+
+# Modelos lineales
+
+## Gradiente descendente
+
+Implementar el algoritmo de gradiente descendente.
+a) Considerar la función no lineal de error $E(u, v) = (ue^v - 2ve^{-u})^2$. Usar gradiente descendente y minimizar esta función de error, comenzando desde el punto $(u, v) = (1, 1)$ y usando una tasa de aprendizaje $\eta = 0,1$.
+
+1) Calcular analíticamente y mostrar la expresión del gradiente de la función $E(u, v)$  
+**Solucion** basta considerar $E$ como un campo escalar $(E : \mathbb{R}^2 \rightarrow  \mathbb{R} )$ y calcular su gradiente $\nabla E$  
+En este caso 
+    $$\nabla E =  (\frac{\partial E}{\partial u} , \frac{\partial E}{\partial v} )  = (2(ue^v - 2ve^{-u})(e^v + 2ve^{-u}), 2(ue^v - 2ve^{-u})(ue^v - 2e^{-u}) ) $$
+
+2) ¿Cuántas iteraciones tarda el algoritmo en obtener por primera vez un valor de $E(u,v)$ inferior a $10^{-14}$ (Usar flotantes de 64 bits) .
+
+R usa flotantes de 64 bits para ello podemos comprobarlo viendo que la operación $2 - \sqrt{2}^2$ da error a partir de la posición 16:
+```{r}
+2 - sqrt(2)^2
+```
+
+```{r}
+E <- function(u, v){
+    (u*exp(v) - 2*v*exp(-u))^2
+}
+
+gradE <- function(u, v){
+    Eu <- 2*(u*exp(v) - 2*v*exp(-u))*(exp(v) + 2*v*exp(-u))
+    Ev <- 2*(u*exp(v) - 2*v*exp(-u))*(u*exp(v) - 2*exp(-u))
+    return(c(Eu, Ev))
+}
+
+```
+
+
+```{r}
+GradientDescent <- function(F, gradF, tasa=0.1, wIni=c(0,0), umbral = 10^(-14), max_iter = 100){
+    t <- 0
+    w <- wIni
+    salir <- FALSE
+    pointList <- c()
+    
+    norma <- function(v){
+        sqrt(sum(v^2))
+    }
+    
+    while(salir == FALSE){
+        gt <- gradF(w[1], w[2])
+        vt <- -gt
+        w <- w + tasa*vt
+        
+        pointList[2*t-1] <- w[1]
+        pointList[2*t] <- w[2]
+        
+        if(F(w[1], w[2]) < umbral){
+            print(c("Valor de la funcion menor que umbral:", F(w[1], w[2]) ))
+            print(c("Convergencia en ", t, "iteraciones"))
+
+            salir <- TRUE
+        }
+        t <- t+1
+        if(t > max_iter){
+            print(c("Max iters alcanzado"))
+            salir <- TRUE
+        }
+
+    }
+    print(c("Stop en ", t-1, "iteraciones"))
+    print(c("Valor de F al parar:", F(w[1], w[2]) ))
+    print(c("Norma del gradiente al parar:", norma(gt) ))
+    m <- matrix(pointList, byrow = TRUE, ncol=2)
+    plot(m[,1], m[,2], xlim = c(-2, 3), ylim = c(-2, 3), pch=as.character(1:length(m[,1])), col=2, xlab= "U", ylab = "V" )
+    pintar_grafica(F)
+}
+
+
+```
+
+Veamos como queda con la funcion $E$:
+```{r}
+GradientDescent(E, gradE, wIni = c(1,1), tasa=0.1)
+```
+
+Ahora lo aplicamos a la función $F(x,y)=x^2 + 2y^2 + 2sin(2\pi x)sin(2\pi y)$ pero con una tasa de crecimiento de 0.01 y 50 iteraciones como máximo:
+```{r}
+f <- function(x, y){
+    #Pi con mas decimales
+    PI <-  3.141592653589793238462643383
+    
+    x^2 + 2*y^2 + 2*sin(2*PI*x)*sin(2*PI*y)
+}
+
+gradF <- function(x, y){
+    #Pi con mas decimales
+    PI <-  3.141592653589793238462643383
+    
+    fx <- 2*x + 4*PI*cos(2*PI*x)*sin(2*PI*y)
+    fy <- 4*y + 4*PI*sin(2*PI*x)*cos(2*PI*y)
+    
+    return(c(fx,fy))
+}
+
+hessF <- function(x, y){
+     #Pi con mas decimales
+    PI <-  3.141592653589793238462643383
+    PI2 <- PI*PI
+    
+    fxx <- 2 - 8*PI2*sin(2*PI*x)*sin(2*PI*y)
+    fxy <- 8*PI2 * cos(2*PI*x)*cos(2*PI*y)
+    fyx <- fxy  # Lema de Schwarz
+    fyy <- 4 - 8*PI2*sin(2*PI*x)*sin(2*PI*y)
+    
+    H <- matrix(c(fxx, fxy, fyx, fyy), ncol = 2)
+}
+```
+```{r}
+GradientDescent(f, gradF, wIni = c(1,1), tasa=0.01, max_iter = 50)
+```
+
+
+Veamos ahora que ocurre con una tasa de 0.1
+```{r}
+GradientDescent(f, gradF, wIni = c(1,1), tasa=0.1, max_iter = 50)
+```
+
+Como vemos en el segundo caso no converge, el problema es que la tasa $\eta$ es demasiado grande para este caso, el motivo es que nosotros multiplicamos $\eta \nabla f(x,y)$ y cuando  $||\nabla f(x,y)||$ es grande dar un salto de $0.1*||\nabla f(x,y)||$ puede sacarnos del entorno del minimo (de hecho en esta función cada entorno concavo/convexo tiene un radio de 0.25 respecto del maximo/minimo local) y $||\nabla f(x,y)||$ suele ser mucho mayor.  
+La gráfica de $F$ es un paraboloide eliptico con "piel de naranja" y nosotros estamos buscando en las proximidades del minimo global del paraboloide (la zona más llana) y aun asi nos salimos.  
+La solución debe ser cambiar el algoritmo para que no consideremos movernos respecto a $\nabla f(x,y)$ sino que nos movamos respecto $\frac{\nabla f(x,y)}{||\nabla f(x,y)||}$ (vector unitario en la direccion de $\nabla f(x,y)$) y tener una **tasa de movimiento variable**.
+
+
+
+##Coord Descendente
+
+```{r}
+CoordDescent <- function(F, gradF, tasa=0.1, wIni=c(0,0), umbral = 10^(-14), max_iter = 100, plot=T, xlab="X", ylab="Y"){
+    t <- 0
+    w <- wIni
+    salir <- FALSE
+    pointList <- c()
+    valueList <- c()
+    
+    norma <- function(v){
+        sqrt(sum(v^2))
+    }
+    ronda_impar <- TRUE
+    while(salir == FALSE){
+        gt <- gradF(w[1], w[2])
+        vt <- -gt
+        w <- if (ronda_impar){
+            w + tasa*c(vt[1],0) #Avance en coord x
+        }
+        else{
+            w + tasa*c(0, vt[2]) #Avance en coord y 
+        }
+        ronda_impar = !ronda_impar
+        
+        pointList[2*t-1] <- w[1]
+        pointList[2*t] <- w[2]
+        
+        if( F(w[1], w[2]) < umbral){
+            print(c("Valor de la funcion menor que umbral:", F(w[1], w[2]) ))
+            print(c("Convergencia en ", t/2, "iteraciones"))
+
+            salir <- TRUE
+        }
+        t <- t+1
+        
+        #Cada iteracion tiene dos partes...
+        if(t > 2*max_iter){
+            print(c("Max iters alcanzado"))
+            salir <- TRUE
+        }
+        
+    }
+    m <- matrix(pointList, byrow = TRUE, ncol=2)
+    if(plot){
+        print(c("Stop en ", (t-1)/2, "iteraciones"))
+        print(c("Valor de F al parar:", F(w[1], w[2]) ))
+        print(c("Norma del gradiente al parar:", norma(gt) ))
+        plot(m[,1], m[,2], xlim = c(-2, 3), ylim = c(-2, 3), pch=as.character(1:length(m[,1])), col=2, xlab= xlab, ylab = ylab )
+        pintar_grafica(F)   
+    }
+    valueList <- F(m[,1], m[,2])
+    print(valueList)
+    return(w)
+}
+```
+
+```{r}
+CoordDescent(f, gradF, wIni = c(1,1), tasa=0.01, max_iter = 30)
+```
+
+
+
+##Metodo de Newton
+
+Implementar el algoritmo de minimización de Newton y aplicarlo a la función $f(x,y)$ dada en el ejercicio.1b. Desarrolle los mismos experimentos usando los mismos puntos de inicio.  
+Generar un gráfico de como desciende el valor de la función con las iteraciones.  
+Extraer conclusiones sobre las conductas de los algoritmos comparando la curva de decrecimiento de la función calculada en el apartado anterior y la correspondiente obtenida con gradiente descendente.
+
+```{r}
+NewtonMethod <- function(F, gradF,  hessF, wIni=c(0,0), umbral = 10^(-14), max_iter = 100, plot=T, xlab="X", ylab="Y"){
+    t <- 0
+    w <- wIni
+    salir <- FALSE
+    pointList <- c()
+    valueList <- c()
+    
+    norma <- function(v){
+        sqrt(sum(v^2))
+    }
+    ronda_impar <- TRUE
+    while(salir == FALSE){
+        gt <- gradF(w[1], w[2])
+        vt <- -gt
+        w <- - solve(hessF(vt[1], vt[2]))%*%c(vt[1],vt[1])
+
+        pointList[2*t-1] <- w[1]
+        pointList[2*t] <- w[2]
+        
+        if( F(w[1], w[2]) < umbral){
+            print(c("Valor de la funcion menor que umbral:", F(w[1], w[2]) ))
+            print(c("Convergencia en ", t/2, "iteraciones"))
+
+            salir <- TRUE
+        }
+        t <- t+1
+        
+        #Cada iteracion tiene dos partes...
+        if(t > 2*max_iter){
+            print(c("Max iters alcanzado"))
+            salir <- TRUE
+        }
+        
+    }
+    m <- matrix(pointList, byrow = TRUE, ncol=2)
+    if(plot){
+        print(c("Stop en ", (t-1)/2, "iteraciones"))
+        print(c("Valor de F al parar:", F(w[1], w[2]) ))
+        print(c("Norma del gradiente al parar:", norma(gt) ))
+        plot(m[,1], m[,2], xlim = c(-2, 3), ylim = c(-2, 3), pch=(as.character(1:length(m[,1]))), col=2, xlab= xlab, ylab = ylab )
+        pintar_grafica(F)   
+    }
+    valueList <- F(m[,1], m[,2])
+    print(valueList)
+    return(w)
+}
+```
+
+```{r}
+NewtonMethod(f, gradF, hessF, wIni = c(1,1), max_iter = 30)
+```
+
+
+## Regresion logistica
+
+En este ejercicio crearemos nuestra propia función objetivo $f$ (probabilidad en este caso) y nuestro conjunto de datos $D$ para ver cómo funciona regresión logística. Supondremos por simplicidad que $f$ es una probabilidad con valores $0/1$ y por tanto que $y$ es una función determinista de $x$.  
+Consideremos $d = 2$ para que los datos sean visualizables, y sea $X = [-1, 1] \times [-1, 1]$ con probabilidad uniforme de elegir cada $x \in X$ . Elegir una línea en el plano como la frontera entre $f(x) = 1$ (donde y toma valores $+1$) y $f(x) = 0$ (donde y toma valores $-1$), para ello seleccionar dos puntos aleatorios del plano y calcular la línea que pasa por ambos.  
+  
+Seleccionar $N = 100$ puntos aleatorios $\{x_n\}$ de $X$ y evaluar las respuestas de todos ellos $\{y_n\}$ respecto de la frontera elegida.
+
+
+
+
+```{r}
+
+RegresionLogistica <- function(muestras, etiquetas, umbral = 0.01, max_iters = 100000){
+    w <- c(0,0,0)
+    N <- length(etiquetas)
+    iters <- 0
+    tasa <- 0.01
+    
+    gradienteError <- function(w, n, muestras, etiquetas){
+        return( -etiquetas[n,]*muestras[n,]/(1 + exp(etiquetas[n,]* w%*%muestras[n,]) ) )
+    }
+    
+    norma <- function(v){
+        sqrt(sum(v^2))
+    }
+    salir <- FALSE
+    while(!salir){
+        w_prev <- w
+        #El hecho de meter esta permutacion es lo que hace que sea "Estocastico"
+        #es importante permutar los puntos para eliminar cualquier patron que pueda aparecer al coger
+        #las muestras en el mismo orden
+        permutacion <- sample(1:N, size = N, replace = FALSE)
+        for(i in permutacion){
+            w <- w - tasa*gradienteError(w, i, muestras, etiquetas)
+            iters <- iters + 1 
+        }  
+        if(norma(w - w_prev) < umbral ){
+            salir <- TRUE
+        }
+        if(iters > max_iters){
+            salir <- TRUE
+            cat("Salimos por maximo iters")
+        }
+    }
+    return(w)
+}
+
+
+puntosClasificadosToMatrix <- function(puntos){
+    m <- data.frame(puntos[[1]],puntos[[2]],puntos[[3]]);
+    return(data.matrix(m))
+}
+
+preparaDatos <- function(puntosClasificados){
+    m <- puntosClasificadosToMatrix(puntosClasificados)
+    muestras <- m[,1:2]
+    numDatos <- length(m[,1])
+    muestras <- cbind(rep(1, numDatos), muestras)
+    etiquetas <- m[,3]
+    etiquetas <- t(t(etiquetas))
+    return(list(muestras, etiquetas))
+}
+
+simula_unif  <- function(N, dim, minimo, maximo){
+    puntos <- list();
+    for(i in 1:dim){
+        xi <- c();
+        xi <- runif(N, minimo, maximo);
+        puntos[[i]] <- xi;
+    }
+    return(puntos)
+}
+
+clasificaPuntosRectav2 <- function(puntos, a, b, dibujar = FALSE){
+    # tipo[i] = 1 o -1 ya que TRUE es 1 y FALSE es 0
+    # La funcion f(x) = 2x-1 lleva el 0 al -1 y el 1 al 1
+    # Por tanto tipo es un vector de -1 y 1 
+    tipo <- 2*(puntos[[2]] - a*puntos[[1]] - b > 0) - 1;
+    if(dibujar){
+        #Limites de los ejes para el plot:
+        miny = min(puntos[[2]]);
+        maxy = max(puntos[[2]]);
+        minx = min(puntos[[1]]);
+        maxx = max(puntos[[1]]);
+        
+        plot(puntos[[1]], puntos[[2]], col=tipo+3, pch=1, xlab="Coord X", ylab="Coord Y", main = "Clasificacion Basica", xlim = c(minx, maxx), ylim = c(miny, maxy) );
+        curve(a*x + b, add=TRUE);
+    }
+    return(list(puntos[[1]], puntos[[2]], tipo));
+}
+
+```
+
+
+```{r}
+misPuntos <- simula_unif(100, 2, -1, 1)
+#Clasificamos puntos por la recta y = x/3 + 1/2
+misPuntosClasificados <- clasificaPuntosRectav2(misPuntos, a = 1/3, b = 0.5, dibujar = T)
+
+datos <- preparaDatos(misPuntosClasificados)
+
+#Muestras es una matriz de dos columnas y etiquetas es un vector columna
+muestras <- datos[[1]]
+etiquetas <- datos[[2]]
+
+pesos <- RegresionLogistica(muestras, etiquetas)
+print(c(-pesos[2]/pesos[3], -pesos[1]/pesos[3]))
+curve(-pesos[2]/pesos[3]*x - pesos[1]/pesos[3], col="red", add = T)
+print(pesos)
+```
+
+
+Ahora vamos a estimar $E_{out}$ para ello usamos un numero suficientemente grande de nuevas muestras:
+```{r}
+nuevasMuestras <- simula_unif(1000, 2, -1,1)
+#Clasificamos por la misma recta que antes:
+misNuevasMuestrasClasificadas <- clasificaPuntosRectav2(nuevasMuestras, a = 1/3, b = 0.5, dibujar = T)
+
+nuevosDatos <- preparaDatos(misNuevasMuestrasClasificadas)
+etiquetasReales <- nuevosDatos[[2]]
+
+#Coeficientes de la recta de regresion
+rectaRegLog <- c(-pesos[2]/pesos[3], -pesos[1]/pesos[3])
+
+misNuevasMuestrasClasificadasRegresion <- clasificaPuntosRectav2(nuevasMuestras, a = rectaRegLog[1], b = rectaRegLog[2], dibujar = T)
+nuevosDatosEstimados <- preparaDatos(misNuevasMuestrasClasificadasRegresion)
+etiquetasEstimadas <- nuevosDatosEstimados[[2]]
+
+cat(c("Recta Real: ", 1/3, 0.5, "\n"))
+cat(c("Recta Regresion: ", rectaRegLog[1], rectaRegLog[2]), "\n")
+
+#Estimamos el E_out como la proporcion de fallos E_out = numFallos / numMuestras
+E_OUT <- mean(etiquetasReales!=etiquetasEstimadas)
+#print(etiquetasReales!=etiquetasEstimadas)
+print(E_OUT)
+
+```
+
+
+##Clasificacion de digitos con Regresion Lineal (de nuevo)
+
+```{r}
+zip <- read.table("~/Desktop/UGR/4-CUARTO/Semestre 2/AprendizajeAutomatico/DigitosZip/zip.train", quote="", comment.char="")
+
+indicesUnosYCincos <- which(zip$V1 == 1 | zip$V1 == 5)
+misNumeros <- zip[indicesUnosYCincos ,]
+
+importarNumeros <- function(data, dibujar = FALSE){
+    num_datos <- length(data$V1)
+    listaDigitos <- list();
+    for(i in 1:num_datos){
+        miMatriz_actual <- data[i,]
+        listaDigitos[[i]] <- matrix(as.numeric(miMatriz_actual[2:257]),nrow = 16,ncol = 16)
+        if(dibujar == TRUE){
+            image(z = listaDigitos[[i]], col = rev(grey.colors(start = 0.1, n = 10, end = 0.95)))
+        }
+    }
+    return(listaDigitos)
+}
+
+calcularMatrizSimetricaVertical <- function(matriz){
+    num_col <- ncol(matriz)
+    matrizSimetrica <- matrix(data = NA, nrow = 16, ncol = 16)
+    for(i in 1:num_col){
+        matrizSimetrica[i,] <- matriz[(num_col+1)-i,]
+    }
+    return(matrizSimetrica)
+}
+
+calcularGradoSimetria <- function(matriz){
+    #Calcula el grado de simetria vertical
+    matrizSimetrica <- calcularMatrizSimetricaVertical(matriz)
+    gradoSimetria <- sum(abs(matriz - matriz[,16:1]))
+    return(gradoSimetria)
+}   
+
+gradoIntensidadMedia <- function(matriz){
+    return(mean(matriz))
+}
+
+dibujarNumero <- function(matriz){
+    image(z = matriz, col = rev(grey.colors(start = 0.1, n = 10, end = 0.95)))
+}
+
+miListaNumeros <- importarNumeros(misNumeros)
+
+```
+
+```{r}
+dibujarNumero(miListaNumeros[[1]])
+dibujarNumero(miListaNumeros[[5]])
+dibujarNumero(miListaNumeros[[3]])
+```
+
+```{r}
+gradosSimetria <- c()
+for(i in 1:length(miListaNumeros)){
+    gradosSimetria[i] <- calcularGradoSimetria(miListaNumeros [[i]])
+}
+
+gradosIntensidad <- c()
+for(i in 1:length(miListaNumeros)){ 
+    gradosIntensidad[i] <- gradoIntensidadMedia(miListaNumeros[[i]])
+}
+
+#Podemos ver como quedan el grafico si aniadimos un color a cada punto en funcion de su etiqueta:
+miVectorEtiquetas <- misNumeros$V1
+miVectorEtiquetas <- (miVectorEtiquetas -3)/2
+
+plot(x=gradosIntensidad , y=gradosSimetria ,col=( miVectorEtiquetas + 3), xlab="Intensidad Promedio", ylab="Grado Simetria")
+
+```
+
+
+
+```{r}
+invertirMatrizSVD <- function(matriz){
+    svdDesc <- svd(matriz)
+    S_inversa_coef <- 1/svdDesc$d
+    S_inversa <- diag(x = S_inversa_coef, nrow = nrow(matriz), ncol = ncol(matriz))
+    V <- matrix(svdDesc$v, nrow = nrow(matriz)) 
+    U <- matrix(svdDesc$u, nrow = nrow(matriz))
+    matriz_inversa <- V %*% S_inversa %*% t(U)
+    return(matriz_inversa)
+}
+
+```
+
+
+```{r}
+#Preparacion de datos
+miVectorEtiquetas <- misNumeros$V1
+miVectorEtiquetas <- (miVectorEtiquetas -3)/2
+head(miVectorEtiquetas)
+
+datos <- matrix(c(rep(1, length(gradosIntensidad)), gradosIntensidad , gradosSimetria), ncol=3 )
+head(datos)
+
+```
+
+
+```{r}
+regress_lin <- function(datos, label){
+    X <- datos; #datos es una matriz [N x 3] ---->>> (1, x0, x1)
+    H <- (invertirMatrizSVD(t(X) %*% X) %*% t(X)) 
+    w <- H %*% t(matrix(label, nrow = 1))
+    # hiperplano: w1 + w2*x + w3*y = 0 ==> 
+    coefs <- c(-w[2]/w[3], -w[1]/w[3]) 
+    return(coefs)
+}
+```
+
+
+```{r}
+recta_reg <- regress_lin(datos, miVectorEtiquetas)
+plot(x=gradosIntensidad , y=gradosSimetria ,col=miVectorEtiquetas +3, xlab="Intensidad Promedio", ylab="Grado Simetria")
+curve(recta_reg[1]*x + recta_reg[2], add = T)
+```
+
+Calculo de $E_{in}$:  
+Para ello comparamos la etiqueta real con la etiqueta que deberia tener si lo clasificasemos por la recta de regresion:
+```{r}
+misNumeros <- list(datos[,2], datos[,3])
+misNumerosClas <- clasificaPuntosRectav2(misNumeros,recta_reg[1], recta_reg[2],dibujar = F)
+etiquetasRegresion <- misNumerosClas[[3]]
+vectorFallos <- miVectorEtiquetas != etiquetasRegresion
+E_in <- mean(vectorFallos)
+print(E_in)
+```
+
+
+
+Calculo de $E_{test}$:  
+Para ello comparamos la etiqueta real con la etiqueta que deberia tener si lo clasificasemos por la recta de regresion:
+
+
+```{r eval=T}
+zipTest <- read.table("~/Desktop/UGR/4-CUARTO/Semestre 2/AprendizajeAutomatico/DigitosZip/zip.test", quote="", comment.char="")
+
+indicesUnosYCincosTest <- which(zipTest$V1 == 1 | zipTest$V1 == 5)
+misNumerosTest <- zipTest[indicesUnosYCincosTest ,]
+
+miListaNumerosTest <- importarNumeros(misNumerosTest)
+
+gradosSimetria <- c()
+for(i in 1:length(miListaNumerosTest)){
+    gradosSimetria[i] <- calcularGradoSimetria(miListaNumerosTest [[i]])
+}
+
+gradosIntensidad <- c()
+for(i in 1:length(miListaNumerosTest)){ 
+    gradosIntensidad[i] <- gradoIntensidadMedia(miListaNumerosTest[[i]])
+}
+
+#Podemos ver como quedan el grafico si aniadimos un color a cada punto en funcion de su etiqueta:
+miVectorEtiquetasTest <- misNumerosTest$V1
+miVectorEtiquetasTest <- (miVectorEtiquetasTest -3)/2
+
+plot(x=gradosIntensidad , y=gradosSimetria ,col=( miVectorEtiquetasTest + 3), xlab="Intensidad Promedio", ylab="Grado Simetria")
+```
+
+
+```{r eval=T}
+datosTest <- matrix(c(rep(1, length(gradosIntensidad)), gradosIntensidad , gradosSimetria), ncol=3 )
+
+misNumerosTest <- list(datosTest[,2], datosTest[,3])
+misNumerosTestClas <- clasificaPuntosRectav2(misNumerosTest,recta_reg[1], recta_reg[2],dibujar = F)
+etiquetasRegresionTest <- misNumerosTestClas[[3]]
+vectorFallosTest <- miVectorEtiquetasTest != etiquetasRegresionTest
+
+E_test <- mean(vectorFallosTest)
+print(E_test)
+
+```
+
+Falta ver una cota del Eout ...
+
+##Sobreajuste
+Vamos a construir un entorno que nos permita experimentar con los problemas de sobreajuste. 
+Consideremos el espacio de entrada $\mathcal{X} = [-1,1]$ con una densidad de probabilidad uniforme, $P(x) = \frac{1}{2}$. Consideramos dos modelos $H_2$ y $H_{10}$ representando el conjunto de todos los polinomios de grado $2$ y grado $10$ respectivamente. La función objetivo es un polinomio de grado $Q_f$ que escribimos como $f(x) =\sum^{Q_f}_{q=0}a_qL_q(x)$, donde $L_q(x)$ son los polinomios de Legendre.
+El conjunto de datoses $\mathcal{D}=\{(x_1,y_1),...,(x_N,y_N)\}$ donde $y_n =f(x_n)+\sigma \epsilon n$ y las $\{\epsilon n\}$ son variables aleatorias **i.i.d.** $\mathcal{N}(0, 1)$ y $\sigma^2$ la varianza del ruido.
+Comenzamos realizando un experimento donde suponemos que los valores de $Q_f$,$N$,$\sigma$, están especificados, para ello:  
+Generamos los coeficientes aq a partir de muestras de una distribución $\mathcal{N}(0,1)$ y escalamos dichos coeficientes de manera que $\mathbb{E}_{a,x}[\mathcal{f}^2] = 1$ ("Ayuda": Dividir los
+coeficientes por $\sqrt{\sum^{Q_f}_{q=0}\frac{1}{2q+1}}$  
+Generamos un conjunto de datos,$x_1,...,x_N$ muestreando de forma independiente $P(x)$ y los valores $y_n = f(x_n) + \sigma \epsilon n$.  
+Sean $g_2$ y $g_{10}$ los mejores ajustes a los datos usando $H_2$ y $H_{10}$ respectivamente, y sean $E_{out}(g_2)$ y $E_{out}(g_{10})$ sus respectivos errores fuera de la muestra.  
+a) Calcular $g_2$ y $g_{10}$
+
+
+```{r}
+#Cargamos las dependencias para usar polinomios de Legendre 
+#(aunque podrian usarse los de Chebyshev tambien)
+library("polynom", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+library("orthopolynom", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+```
+
+```{r}
+X <- runif(50, min = -1, max = 1)
+
+normalized.p.list <- legendre.polynomials(n= 6, normalized=TRUE)
+k=1:6
+lY =  sapply (X,FUN = function(x) polynomial.values( normalized.p.list,x))
+Y = matrix(unlist(lY), nrow= 50, byrow = T)
+
+par(mfrow=c(2,3))
+for(i in 2:7){
+ plot(X, Y[,i])
+}
+
+```
+
+
+```{r}
+set.seed(6)
+#Parametros 
+Qf <- 2        #Grado del polinomio objetivo (ruido deterministico si H no llegase a entenderla)
+sigma2 <- 0   #Intensidad del ruido estocastico
+N <- 500        #Numero de muestras para el "training"
+
+Qf <- Qf +1         #Qf = 6 indicaba grado 5, despues de esto indica grado 6
+X <- runif(N, min = -1, max = 1)
+aq <- rnorm(n = Qf, mean = 0, sd = 1)
+
+#La pista que dan en el enunciado esta mal
+aq_norm <- sqrt(sum(aq^2))
+aq <- aq/aq_norm
+
+normalized.p.list <- legendre.polynomials(n= Qf, normalized=TRUE)
+rm(Target)
+Target <- 0
+for(i in 1:Qf){
+    Target <- Target + normalized.p.list[[i]]*aq[i]
+}
+
+lY <-  sapply(X,FUN = function(x) polynomial.values( list(Target),x))
+Y  <- matrix(unlist(lY), nrow= N, byrow = T)
+Y[,1] <- Y[,1] + rnorm(length(Y[,1]),0,sigma2)
+par(mfrow=c(1,1))
+plot(X, Y[,1], main = c("Funcion objetivo", "con ruido estocastico"), ylab = "F(X) + noise")
+f <- as.function(Target)
+curve(expr = f, add = T, col="red", lwd=2)
+
+Target
+integral(Target^2, limits = c(-1,1))
+```
+
+```{r}
+regress_lin <- function(datos, label){
+    X <- datos; #datos es una matriz [N x 3] ---->>> (1, x0, x1)
+    H <- (invertirMatrizSVD(t(X) %*% X) %*% t(X)) 
+    w <- H %*% t(matrix(label, nrow = 1))
+    # hiperplano: w1 + w2*x + w3*y = 0 ==> 
+    return(w)
+}
+```
+
+Calculamos ahora g2
+```{r}
+H2 <- legendre.polynomials(n= 2, normalized=TRUE)
+pol1 <- as.function(H2[[2]])
+pol2 <- as.function(H2[[3]])
+
+Z <- matrix(c(rep(1, N), pol1(X), pol2(X)), ncol = 3, byrow = F)
+#Z <- matrix(c(rep(1, N), X, X^2), ncol = 3, byrow = F)
+Y <- matrix(Y[,1], ncol = 1)
+```
+
+```{r}
+w <- regress_lin(datos = Z, label = Y)
+print(w)
+g2 <- as.function(w[1] + w[2]*H2[[2]] + w[3]*H2[[3]])
+#g2 <- function(x) {w[1] + w[2]*x + w[3]*x^2}
+print(g2)
+```
+
+Mostramos g2 y la funcion objetivo real
+```{r}
+
+par(mfrow=c(1,2))
+plot(X, Y[,1], main = c("G2 ajustando la muestra"), ylab = "F(X) + noise")
+curve(g2, add = T, col="blue", lw=2, lty=6 )
+plot(X, Y[,1], main = c("G2 y Funcion objetivo", "con ruido estocastico"), ylab = "F(X) + noise")
+curve(expr = f, add = T, col="red", lwd=2)
+curve(g2, add = T, col="blue", lw=2, lty=6 )
+```
+
+Calculamos ahora g10
+```{r}
+H10 <- legendre.polynomials(n= 10, normalized=TRUE)
+pol <- list()
+for(i in 1:10){
+    pol[[i]] <- as.function(H10[[i+1]])
+}
+Z <- matrix(rep(1, N), ncol = 1)
+
+for(i in 1:10){
+    Z <- cbind(Z, pol[[i]](X))
+}
+
+Y <- matrix(Y[,1], ncol = 1)
+
+#Nota:
+#Se podria haber hecho Z como (1, x, x^2 ... x^10)
+#Z <- matrix(c(rep(1, N), X, X^2, X^3, X^4, X^5, X^6, X^7, X^8, X^9, X^10), ncol = 11, byrow = F)
+```
+
+```{r}
+w <- regress_lin(datos = Z, label = Y)
+print(w)
+print(H10)
+#Nos fijamos en que H10[1] no es 1  ... (por eso el bucle empieza en 2)
+g10 <- w[1]
+for(i in 2:11){
+    g10 <- g10 + H10[[i]]*w[i]
+}
+g10 <- as.function(g10)
+print(g10)
+
+```
+
+Mostramos g10 y la funcion objetivo real
+```{r}
+
+par(mfrow=c(1,2))
+plot(X, Y[,1], main = c("G10 ajustando la muestra"), ylab = "F(X) + noise")
+curve(g10, add = T, col="blue", lw=2, lty=6 )
+plot(X, Y[,1], main = c("G10 y Funcion objetivo", "con ruido estocastico"), ylab = "F(X) + noise")
+curve(expr = f, add = T, col="red", lwd=2)
+curve(g10, add = T, col="blue", lw=2, lty=6 )
+```
+
+```{r}
+errorCuadraticoMedio <- function(X, Y, f){
+    N <- length(X)
+    return(sum((Y - f(X))^2)/N)
+}
+```
+
+
+```{r}
+experimento_Overfiting <- function(Qf=20, N=50, sigma=1, gradoH=2, seed=1, dibujar=TRUE, verbose=FALSE){
+    set.seed(seed)
+    Qf <- Qf+1
+    
+    #Puntos
+    X <- runif(N, min = -1, max = 1)
+    
+    #Coeficientes de Fourier para aproximar 'f' mediante polinomios de Legendre
+    aq <- rnorm(n = Qf, mean = 0, sd = 1)
+    aq_norm <- sqrt(sum(aq^2))
+    aq <- aq/aq_norm
+    
+    legendre.pol.list <- legendre.polynomials(n= Qf, normalized=TRUE)
+    
+    f <- 0
+    for(i in 1:Qf){
+        f <- f + legendre.pol.list[[i]]*aq[i]
+    }
+
+    f_ <- as.function(f)
+    Y <- f_(X)                               # Lista de etiquetas de las muestras
+    Y <- Y + rnorm(length(Y),0,sigma^2)      # Añadimos el ruido
+    
+    #Imprimimos la funcion objetivo con sus muestras ruidosas
+    if(dibujar){
+        par(mfrow=c(1,1))
+        plot(X, Y, main = c("Funcion objetivo", "con ruido estocastico"), ylab = "F(X) + noise")
+        curve(expr = f_, add = T, col="green", lwd=4)
+    }
+    #Comprobamos que f este normalizada (debe salir 1)
+    if(verbose){
+        print(c("Esta f normalizada correctamente? ", integral(f^2, limits = c(-1,1))))
+    }
+    
+    #Preparamos conjunto de hipotesis
+    H <- legendre.polynomials(n= gradoH, normalized=TRUE)
+    pol <- list()
+    for(i in 1:gradoH){
+        pol[[i]] <- as.function(H[[i+1]])
+    }
+    #Preparamos Z-space para regresion lineal en el espacio transformado "Z = Phi(X)"
+    Z <- matrix(rep(1, N), ncol = 1)
+    for(i in 1:gradoH){
+       Z <- cbind(Z, pol[[i]](X))
+    }
+    Y_byCol <- matrix(Y, ncol = 1)
+    #Hacemos regresion lineal
+    w <- regress_lin(datos = Z, label = Y_byCol)
+    
+    #Obtenemos nuestra funcion de ajuste (g)
+    g <- w[1]
+    for(i in 2:(gradoH+1)){
+        g <- g + H[[i]]*w[i]
+    }
+    g <- as.function(g)
+    
+    #Comprobamos nuestra funcion de ajuste con la funcion objetivo
+    if(dibujar){
+        par(mfrow=c(1,2))
+        plot(X, Y, main = c("Funcion objetivo", "con ruido estocastico"), ylab = "F(X) + noise")
+        curve(expr = f_, add = T, col="red", lwd=2)
+        plot(X, Y, main = c("G ajustando la muestra"), ylab = "F(X) + noise")
+        curve(expr = f_, add = T, col="red", lwd=2)
+        curve(g, add = T, col="blue", lw=2, lty=6 )
+    }
+    
+    #Calculo de E_in
+    ECM <- errorCuadraticoMedio(X, Y, g)
+    if(verbose){
+        print(c("El error medio interno es", ECM))
+    }
+    
+    #E_out
+    #Preparando conjunto muestras de Test para Eout
+    N.test <- N/10
+    X.test <- runif(N.test, min = -1, max = 1)
+    Y.test <- f_(X.test)
+    Y.test <- Y.test + rnorm(length(Y.test),0,sigma^2)
+    
+    #Imprimimos la funcion objetivo con sus muestras TEST ruidosas
+    if(dibujar){
+        par(mfrow=c(1,2))
+        plot(X, Y, main = c("Funcion objetivo", "con muestras TRAIN"), ylab = "F(X) + noise")
+        curve(expr = f_, add = T, col="red", lwd=2)
+        plot(X.test, Y.test, main = c("G sobre el TEST"), ylab = "F(X) + noise", xlim = c(-1,1))
+        curve(expr = f_, add = T, col="red", lwd=2)
+        curve(g, add = T, col="blue", lw=2, lty=6 )
+    }
+    #Calculo de E_out
+    E_out <- errorCuadraticoMedio(X.test, Y.test, g)
+    if(verbose){
+        print(c("El error medio fuera de la muestra es", E_out))
+    }
+    return(E_out)
+}
+
+```
+
+```{r}
+experimento_Overfiting(Qf = 3, N = 100, sigma = 0.3, gradoH = 5, dibujar = TRUE, verbose = TRUE)
+```
+
+```{r}
+#Usando los parametros: Qf = 20, N=50, sigma=1 
+#Hacemos mas de 100 experimentos con diferentes funciones objetivo y promediamos Eout
+
+experimentoH2 <- function(i){
+    experimento_Overfiting(Qf = 3, N = 20, sigma = 1, gradoH = 2,seed = i,dibujar = F)
+}
+
+experimentoH10 <- function(i){
+    experimento_Overfiting(Qf = 3, N = 20, sigma = 1, gradoH = 10,seed = i,dibujar = F)
+}
+
+Num_experimentos <- 150
+
+EoutsH2 <- sapply(1:Num_experimentos, experimentoH2)
+EoutsH10 <- sapply(1:Num_experimentos, experimentoH10)
+
+hist(EoutsH2, col="orange")
+hist(EoutsH10, col="brown")
+EoutH2 <- mean(EoutsH2)
+EoutH10 <- mean(EoutsH10)
+cat(c("Para ",Num_experimentos," experimentos el Eout de H2 medio es:", EoutH2))
+cat(c("Para ",Num_experimentos," experimentos el Eout de H10 medio es:", EoutH10))
+
+tasaOverfitting <- EoutH10 - EoutH2
+cat(c("Para ",Num_experimentos," la tasa de sobreajuste Eout10 - Eout2 =", tasaOverfitting))
+
+
+```
+
+```{r}
+    experimento_Overfiting(Qf = 3, N = 20, sigma = 1, gradoH = 10,seed = 9,dibujar = T)
+
+```
+b) ¿Por qué normalizamos $f$? (Ayuda: interpretar el significado de $\sigma$)
+Para que el ruido afecte por igual a todas las funciones.
+
+Para normalizar he dividido por $\sum_{i=0}^{Q_f}a_i^2$ en lugar de dividir por: $\sqrt{\sum^{Q_f}_{q=0}\frac{1}{2q+1}}$ que es lo que dice la ayuda (porque creo que está mal lo que se dice en la ayuda)
+Mi argumentacion es la siguiente:  
+$\mathbb{E}_{a,x}[f^2] = 1 \Leftrightarrow \int_{-1}^1 \sum_{i=0}^n (a_iL_i(x))^2 dx = 1$
+Donde $L_i(x)$ es el polinomio de Legendre normalizado de grado $i$  
+Ahora vamos a desarrollar $\int_{-1}^1\sum_{i=0}^n (a_iL_i(x))^2 dx$  
+$\int_{-1}^1 \sum_{i=0}^n(a_iL_i(x))^2 dx = \int_{-1}^1 \sum_{i=0}^na_i^2L_i(x)^2 + R(x) dx$  
+
+Donde $R(x)$ es una combinacion lineal de polinomios de Legendre de la forma: $\sum_{\mathcal{I}} a_i L_i(x) L_j(x)$ con $i\neq j$.
+
+Luego por la ortogonalidad de los polinomios de Legendre tenemos $\int_{-1}^1 R(x) dx = 0$  
+Con lo que $\int_{-1}^1 \sum_{i=0}^n (a_iL_i(x))^2 dx = \int_{-1}^1 \sum_{i=0}^n a_i^2L_i(x)^2 dx$  
+Ahora utilizando propiedades usuales de las integrales tenemos:  
+$\int_{-1}^1 \sum_{i=0}^n a_i^2L_i(x)^2 dx =  \sum_{i=0}^n \int_{-1}^1 a_i^2L_i(x)^2 dx = \sum_{i=0}^n a_i^2 \int_{-1}^1 L_i(x)^2 dx = \sum_{i=0}^n a_i^2$  
+Donde hemos utilizado en el último paso que los $L_i$ estan normalizados
+
+Por tanto para normalizar un polinomio $f$ cualquiera expresado como $f = \sum_{i=0}^n (a_iL_i(x))$ (donde $n = Q_f$) lo que debemos hacer es dividir por $\sum_{i=0}^n a_i^2$
+
+
+
+##Regularizacion
+
+Para $d = 3$ (dimensión) generar un conjunto de $N$ datos aleatorios ${x_n, y_n}$ de la siguiente forma. Para cada punto $x_n$ generamos sus coordenadas muestreando de forma independiente una $\mathcal{N} (0, 1)$. De forma similar generamos un vector de pesos de $(d+1)$ dimensiones $w_f$ , y el conjunto de valores $y_n = w^t_f x_n + \sigma \epsilon n$, donde $\epsilon n$ es un ruido que sigue también una $\mathcal{N} (0, 1)$ y $\sigma^2$ es la varianza del ruido; fijar $\sigma = 0,5$.
+Usar regresión lineal con regularización “weight decay” para estimar $w_f$ con $w_{reg}$. Fijar el parámetro de regularización a $0,05/N$.
+
+
+```{r}
+regress_lin_decay <- function(datos, label, lambda){
+    X <- datos; #datos es una matriz [N x 3] ---->>> (1, x0, x1)
+    XtX <- t(X) %*% X
+    lambdaI <- diag(lambda, nrow = nrow(XtX))
+    H <- (invertirMatrizSVD(XtX + lambdaI) %*% t(X)) 
+    w <- H %*% t(matrix(label, nrow = 1))
+    # hiperplano: w1 + w2*x + w3*y = 0 ==> 
+    return(w)
+}
+```
+
+```{r}
+set.seed(8) #Para obtener un ejemplo bonito visualmente
+N <- 6
+sigma2 <- 0.2
+par(mfrow=c(1,1)) #Para las graficas
+
+X <- runif(N, -1,1)
+Y <- X^2
+Ruido <- rnorm(N, 0, sigma2)
+
+Y <- Y + Ruido
+
+plot(X, Y, xlim = c(-1,1), ylim = c(-0.5,0.5), main="Funcion real y datos con ruido")
+curve(x^2, add=T, col="black", lw=2)
+
+#Aproximacion con polinimio de orden 2 usando regresion lineal:
+data <- matrix(c(rep(1, N), X, X^2), ncol = 3, byrow = F)
+etiquetas <- t(t(Y))
+w2 <- regress_lin(data, etiquetas)
+plot(X, Y, xlim = c(-1,1), ylim = c(-0.5,0.5) , main="Aproximacion regresion lineal orden 2")
+curve(w2[1] + w2[2]*x + w2[3]*x^2, add=T, col="red", lw=1.5)
+
+#Aproximacion con un polinomio de orden 5 (perfect fit)
+data <- matrix(c(rep(1, N), X, X^2, X^3, X^4, X^5), ncol = 6, byrow = F)
+etiquetas <- t(t(Y))
+w5 <- regress_lin(data, etiquetas)
+plot(X, Y, xlim = c(-1,1), ylim = c(-0.5,0.5), main=c("Comparativa regresion lineal","orden 2 vs orden 5"))
+curve(w2[1] + w2[2]*x + w2[3]*x^2, add=T, col="red", lw=1.5)
+curve(w5[1] + w5[2]*x + w5[3]*x^2 + w5[4]*x^3 + w5[5]*x^4 + w5[6]*x^5 , add=T, col="blue", lw=1.5)
+
+#Aproximacion con un polinomio de orden 5 con weight decay (lambda = 0.05/N)
+data <- matrix(c(rep(1, N), X, X^2, X^3, X^4, X^5), ncol = 6, byrow = F)
+etiquetas <- t(t(Y))
+w5decay <- regress_lin_decay(data, etiquetas, lambda = 0.05/N)
+plot(X, Y, xlim = c(-1,1), ylim = c(-0.5,0.5), main=c("Comparativa regresion lineal","orden 2 vs orden 5 + decay"))
+curve(w2[1] + w2[2]*x + w2[3]*x^2, add=T, col="red", lw=1.5)
+curve(w5decay[1] + w5decay[2]*x + w5decay[3]*x^2 + w5decay[4]*x^3 + w5decay[5]*x^4 + w5decay[6]*x^5 , add=T, col="blue", lw=1.5)
+```
+
+
+
+```{r}
+#Simula Validacion Cruzada de puntos en R^3 
+simulaCrossValidation <- function(N, lambda, sigma){
+    #Especificacion de parametros:
+    xlim <- c(-1,1) #intervalo X
+    dim <- 3  #No es un parametro que pueda cambiarse sin modificar el codigo...
+    
+    #Generamos las muestras con sus etiquetas y los pesos que queremos estimar
+    X <- simula_unif(N, dim,  xlim[1], xlim[2])
+    data <- matrix(c(rep(1, N), X[[1]], X[[2]], X[[3]]), ncol=4, byrow = F)
+    wf <- rnorm(dim+1, 0, 1)
+    wf <- t(t(wf))
+    Y <- data %*% wf 
+    Ruido <- rnorm(N, 0, sigma)
+    Y <- Y + Ruido*sigma
+    
+    #Estimamos los pesos wf mediante regresion lineal
+    wreg <- regress_lin_decay(datos = data, label = Y, lambda = lambda)
+    #print(wf)
+    #print(wreg)
+    
+    error.i <- vector(length = N)
+    #Comenzamos validacion cruzada para estimar el error:
+    for(i in 1:N){
+        data.test <- data[i,]
+        Y.test <- Y[i,]
+        data.train <- data[-i,]
+        Y.train <- Y[-i,]
+        wreg.i <- regress_lin_decay(data.train, Y.train, lambda/N)
+        error.i[i] <- (Y.test - (data.test%*%wreg.i))^2
+    }
+    #print(error.i)
+    #E_cv <- mean(error.i)
+    #print(E_cv)
+    return(error.i)
+}
+simulaCrossValidation(118, 0.05, 0.5)
+```
+
+```{r}
+listaValores <- seq(18, 118, by = 10)
+listaErrores <- list()
+for(i in listaValores){
+    listaErrores <- simulaCrossValidation(i, 0.05, 0.5)
+}
+print(listaErrores)
+
+```
+
+```{r}
+experimentoCV <- function(N, lambda, sigma){
+    errores <- simulaCrossValidation(N, lambda, sigma)
+    return(c(errores[1], errores[2], mean(errores)) )
+}
+
+M <- 1000
+for(N in listaValores){
+    e1  <- vector(length = M)
+    e2  <- vector(length = M)
+    ecv <- vector(length = M)
+    for(i in 1:M){
+        aux <- experimentoCV(N, 0.05, 0.5)
+        e1[i] <- aux[1]
+        e2[i] <- aux[2]
+        ecv[i] <- aux[3]
+    }
+    m <- matrix(c(mean(e1), mean(e2), mean(ecv), var(e1), var(e2), var(ecv)),
+                ncol = 3, byrow = T)
+    cat(c("Valores para N=", N, " \n"))
+    print(m)
+}
+```
+
+¿Cuál debería de ser la relación entre el promedio de los valores de $e_1$ y el de los valores de $E_{cv}$ ? ¿y el de los valores de $e_2$? Argumentar la respuesta en base a los resultados de los experimentos.  
+El promedio de $e_1$ debe ser el mismo que el de cualquier $e_i$ ya que hay muchos datos y las varianzas son pequeñas. Como $e_{cv} = \sum_{i=0}^M e_i$ tenemos que el promedio debe ser el mismo.
+
+¿Qué es lo que contribuye a la varianza de los valores de $e_1$?  
+Que los valores de cada ejecucion son independientes 
+
+Si los errores de validación-cruzada fueran verdaderamente independientes, ¿cual sería
+la relación entre la varianza de los valores de $e_1$ y la varianza de los de $E_{cv}$?
+
+$var(E_{cv}) = \frac{1}{N^2} var(\sum_{i=0}^N e_i)) = \frac{1}{N^2} var(\sum_{i=0}^N e_i)) = \frac{1}{N^2} \sum_{i=0}^N var(e_i)) = \frac{1}{N^2} N var(e_1)) = \frac{1}{N}var(e_1))$
+
+Una medida del número efectivo de muestras nuevas usadas en el cálculo de $E_{cv}$ 
+es el cociente entre la varianza de $e_1$ y la varianza de $E_{cv}$. 
+Explicar por qué, y dibujar, respecto de $N$, el número efectivo de nuevos ejemplos
+($N_{eff}$) como un porcentaje de $N$. NOTA: Debería de encontrarse que $N_{eff}$ está cercano a $N$.
+
+
+```{r}
+M <- 1000
+Neff <- vector(length = length(listaValores))
+index <- 1
+for(N in listaValores){
+    e1  <- vector(length = M)
+    ecv <- vector(length = M)
+    for(i in 1:M){
+        aux <- experimentoCV(N, 0.05, 0.5)
+        e1[i] <- aux[1]
+        ecv[i] <- aux[3]
+    }
+    Neff[index] <-  var(e1)/var(ecv)
+    index <- index + 1
+    #print(Neff)
+}
+print(Neff)
+```
+
+```{r}
+plot(listaValores, Neff, type = "o")
+```
+
+Como hemos visto antes $var(E_{cv}) = \frac{1}{N}var(e_i)$ por tanto $\frac{var(E_{cv})}{var(e_i)} = \frac{1}{N} \implies N_{eff} = N$
+
+
+Si se incrementa la cantidad de regularización, ¿debería $N_{eff}$ subir o bajar?. Argumentar la respuesta. Ejecutar el mismo experimento con $\lambda = 2,5/N$ y comparar los resultados del punto anterior para verificar la conjetura.
+
+La $N_{eff}$ debe bajar ya que estás disminuyendo la varianza de los $e_i$ (tambien disminuyes la varianza de los $e_{cv}$ pero esta disminucion es provocada por la de los $e_i$ y por tanto se sigue manteniedo $var(E_{cv}) = \frac{1}{N}var(e_i)$)  
+Como $var(E_{cv}) = \frac{1}{N}var(e_i)$ y $var(e_i)$ baja tenemos que $var(e_i) \rightarrow \alpha var(e_i) \implies N_{eff} \rightarrow \alpha N_{eff}$ con $\alpha \in (0,1)$ luego el $N_eff$ baja.
+
+
+```{r}
+M <- 1000
+Neff_reg <- vector(length = length(listaValores))
+index <- 1
+for(N in listaValores){
+    e1  <- vector(length = M)
+    ecv <- vector(length = M)
+    for(i in 1:M){
+        aux <- experimentoCV(N, 2.5, 0.5)
+        e1[i] <- aux[1]
+        ecv[i] <- aux[3]
+    }
+    Neff_reg[index] <-  var(e1)/var(ecv)
+    index <- index + 1
+    #print(Neff_reg)
+}
+print(Neff_reg)
+```
+
+
+```{r}
+plot(listaValores, Neff_reg, type = "o", col="blue")
+points(listaValores, Neff, type="o", col="orange")
+points(listaValores, listaValores, type = "l", add=T, col="black")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
