@@ -1,3 +1,3 @@
-# XGBoost noise effect
+# Machine learning tutorial
 
-In this repository we want to demonstrate how noise affect to XGBoost performance, as well as show how we can regularize it.
+In this repository we want to show some Machine learning techniques, its features and how to use it.
